@@ -68,7 +68,6 @@ class ActionTypes extends React.Component {
                 this.setState({sessionsData: res.data.sessions});
                 this.filterByThreshold();
             })
-
         //todo catch error
     }
 

@@ -5,6 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import ActionTypes from "./ActionTypes";
+import Length from "./Length";
 
 class AnalysisTabs extends React.Component {
     constructor(props) {
@@ -27,7 +28,8 @@ class AnalysisTabs extends React.Component {
                         <Tab label="Length"/>
                     </Tabs>
                 </AppBar>
-                {this.state.value === 0 && <ActionTypes>Item One</ActionTypes>}
+                {this.state.value === 0 && <ActionTypes/>}
+                {this.state.value === 3 && <Length/>}
             </div>
         );
     }
