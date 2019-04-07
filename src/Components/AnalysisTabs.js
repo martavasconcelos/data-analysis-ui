@@ -6,6 +6,8 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import ActionTypes from "./ActionTypes";
 import Length from "./Length";
+import Similarity from "./Similarity"
+import Element from "./Element";
 
 class AnalysisTabs extends React.Component {
     constructor(props) {
@@ -29,6 +31,8 @@ class AnalysisTabs extends React.Component {
                     </Tabs>
                 </AppBar>
                 {this.state.value === 0 && <ActionTypes/>}
+                {this.state.value === 1 && <Element/>}
+                {this.state.value === 2 && <Similarity/>}
                 {this.state.value === 3 && <Length/>}
             </div>
         );

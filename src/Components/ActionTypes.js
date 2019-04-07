@@ -34,7 +34,6 @@ class ActionTypes extends React.Component {
 
     handleInputChange = event => {
         this.setState({threshold: event.target.value});
-        this.filterByThreshold();
     };
 
 
@@ -100,8 +99,8 @@ class ActionTypes extends React.Component {
                     <div>
                         <FormControl component="fieldset">
                             <RadioGroup
-                                aria-label="Gender"
-                                name="gender1"
+                                aria-label="Compare"
+                                name="compare"
                                 value={this.state.compare}
                                 onChange={this.handleChange}
                             >
