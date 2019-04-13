@@ -1,19 +1,25 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
-.noMargin{
-  margin: 0;
+.noMargin {
+    margin: 0;
 }
 
-.AnalysisTabsStyles{
-  height: 100vh;
-}
-.ResultsPanelStyles{
-  background-color: aliceblue;
-  height: 100vh;
+.AnalysisTabsStyles {
+    height: 100vh;
 }
 
-.input{
-  width: 30vw;
+.ResultsPanelStyles {
+    height: 95vh;
+}
+
+.PaperStyles {
+    max-height: 95vh;
+    overflow: auto;
+    background-color: aliceblue;
+}
+
+.input {
+    width: 30vw;
 }

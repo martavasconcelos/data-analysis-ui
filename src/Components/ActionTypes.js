@@ -18,18 +18,19 @@ class ActionTypes extends React.Component {
         super(props);
 
         this.requestActionTypes = this.requestActionTypes.bind(this);
-        this.filterByThreshold = this.filterByThreshold.bind(this);
+        this.filterToShow = this.filterToShow.bind(this);
 
         this.state = {
-            compare: '',
+            operator: '',
             sessionsData: [],
             threshold: '',
             result: [],
+            loading: false
         };
     }
 
     handleChange = event => {
-        this.setState({compare: event.target.value});
+        this.setState({operator: event.target.value});
     };
 
     handleInputChange = event => {
@@ -38,58 +39,50 @@ class ActionTypes extends React.Component {
 
 
     async requestActionTypes() {
-        /*
-                axios.get('http://localhost:3000/session')
-                    .then(res => {
-                        console.log("response: ", res.data.records);
-                        res.data.records.map((session) => {
-                            console.log("response: ", session);
-                            axios.post('http://localhost:3000/actiontype', {session: session._fields[0]})
-                                .then(res => {
-                                    console.log("response type: ", res.data.records);
-                                    sessions.push(session._fields);
-                                })
-                        })
-                    })
-                    .then(() => {
-                            console.log("sessions lo", sessions.length);
 
-                            this.setState({sessionsData: sessions});
-                            this.filterByThreshold(sessions);
-                        }
-                    )
-                    */
-
-
-        axios.post('http://localhost:3000/actiontype', {sessions: ["f830df62-f8fc-e544-83fe-1c87c1fd82a5", "139ac765-0032-27ff-6d2e-0fce4163d254"]})
+        this.setState({
+            loading: true,
+        });
+/*
+        axios.get('http://localhost:3000/actiontype')
             .then(res => {
                 console.log("response: ", res);
-                this.setState({sessionsData: res.data.sessions});
+                this.setState({sessionsData: res.data.records});
                 this.filterByThreshold();
+            })*/
+
+
+        axios.post('http://localhost:3000/actiontype', {
+            threshold: parseInt(this.state.threshold),
+            operator: this.state.operator })
+            .then(res => {
+                console.log("response: ", res);
+              //  this.setState({sessionsData: res.data.records});
+                this.filterToShow(res.data.records);
             })
         //todo catch error
+
+
     }
 
-    filterByThreshold() {
+    filterToShow(data) {
         let filteredSessions = [];
-        this.state.sessionsData.map((session) => {
-            if(this.state.compare === "equal") {
-                if (session.actionTypes == this.state.threshold) {
-                    filteredSessions.push(session.session);
-                }
-            }
-            if(this.state.compare === "more") {
-                if (session.actionTypes > this.state.threshold) {
-                    filteredSessions.push(session.session);
-                }
-            }
-            if(this.state.compare === "less") {
-                if (session.actionTypes < this.state.threshold) {
-                    filteredSessions.push(session.session);
-                }
+        data.map((item) => {
+            console.log("item: ", item);
+            if(item._fields[0] !== null){
+                item._fields[0].map((session) => {
+                    filteredSessions.push(session);
+                });
             }
         });
+
         this.setState({result: filteredSessions});
+
+        if (this.state.result !== []) {
+            this.setState({
+                loading: false,
+            });
+        }
     }
 
     render() {
@@ -101,12 +94,12 @@ class ActionTypes extends React.Component {
                             <RadioGroup
                                 aria-label="Compare"
                                 name="compare"
-                                value={this.state.compare}
+                                value={this.state.operator}
                                 onChange={this.handleChange}
                             >
-                                <FormControlLabel value="more" control={<Radio/>} label="More than"/>
-                                <FormControlLabel value="less" control={<Radio/>} label="Less than"/>
-                                <FormControlLabel value="equal" control={<Radio/>} label="Equal to"/>
+                                <FormControlLabel value=">" control={<Radio/>} label="More than"/>
+                                <FormControlLabel value="<" control={<Radio/>} label="Less than"/>
+                                <FormControlLabel value="=" control={<Radio/>} label="Equal to"/>
                             </RadioGroup>
                         </FormControl>
 
@@ -121,13 +114,14 @@ class ActionTypes extends React.Component {
                             }}
                             margin="normal"
                         />
-                        <Button variant="contained" color="primary" onClick={this.requestActionTypes} disabled={(this.state.threshold === '' || this.state.compare === '')}>
+                        <Button variant="contained" color="primary" onClick={this.requestActionTypes}
+                                disabled={(this.state.threshold === '' || this.state.operator === '')}>
                             Find
                         </Button>
                     </div>
                 </Grid>
                 <Grid item xs={6}>
-                    <ResultsPanel result={this.state.result}/>
+                    <ResultsPanel loading={this.state.loading} result={this.state.result}/>
                 </Grid>
             </Grid>
 

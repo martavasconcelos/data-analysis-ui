@@ -25,6 +25,7 @@ class Length extends React.Component {
             sessionsData: [],
             percentage: -1,
             result: [],
+            loading: false,
         };
     }
 
@@ -38,11 +39,14 @@ class Length extends React.Component {
 
 
     async requestSimilarity() {
-        axios.get('http://localhost:3000/pathid')
+        this.setState({
+            loading: true,
+        });
+        axios.get('http://localhost:3000/path')
             .then(res => {
                 console.log("response from path id: ", res);
                 this.setState({sessionsData: res.data.records});
-                this.getSimilarity();
+                this.getSimilarityMatrixTest();
             })
         //todo catch error
     }
@@ -86,6 +90,112 @@ class Length extends React.Component {
                 thSimilaritySession1.appendChild(document.createTextNode(similarity));
                 trSession1.appendChild(thSimilaritySession1);
             }
+        }
+        if (this.state.sessionsData !== []) {
+            this.setState({
+                loading: false,
+            })
+        }
+    }
+
+
+    getSimilarityMatrixTest() {
+        let mat = [];
+        let similarityValues = []
+        let similaritySessions = []
+        let length = 10;
+
+        console.table("matrix init: ", mat);
+
+        let i;
+        for (i = 0; i < length; i++) {
+            mat[i] = [];
+        }
+
+        // increment each column in the first row
+        let b;
+        for (b = 0; b < length; b++) {
+            mat[0][b] = [];
+        }
+
+        console.table("matrix foo: ", mat);
+
+        //mudar para nao calcular 2x distance
+        for (let i = 0; i < length; i++) {
+            for (let j = 0; j < length; j++) {
+                console.log("sim between: ", this.state.sessionsData[i]._fields[0], "and ", this.state.sessionsData[j]._fields[0])
+                console.log("sim between: ", this.state.sessionsData[i]._fields[1], "and ", this.state.sessionsData[j]._fields[1])
+                let distance = this.getLevenshteinDistance(this.state.sessionsData[i + 10]._fields[1], this.state.sessionsData[j + 10]._fields[1]);
+                mat[i][j] = distance;
+            }
+        }
+
+        console.table("matrix sim: ", mat);
+
+
+        for (let i = 0; i < length; i++) {
+            let value = 0;
+            for (let j = 1; j < length; j++) {
+                console.log("value: ", mat[i][j]);
+                value += mat[i][j];
+            }
+            let x = {session: this.state.sessionsData[i]._fields[0], value: value}
+
+            similarityValues.push(x);
+        }
+        similarityValues.sort((a, b) => parseFloat(a.value) - parseFloat(b.value));
+
+        similarityValues.map((sessionData)=>{
+            similaritySessions.push(sessionData.session)
+            }
+        );
+
+        console.table("matrix final: ", similarityValues);
+
+        this.setState({result: similaritySessions});
+
+        if (this.state.sessionsData !== []) {
+            this.setState({
+                loading: false,
+            })
+        }
+    }
+
+
+    getSimilarityMatrix() {
+        let matrix = [];
+
+        let i;
+        for (i = 0; i < this.state.sessionsData.length; i++) {
+            matrix[i] = [i];
+        }
+
+        // increment each column in the first row
+        let b;
+        for (b = 0; b < this.state.sessionsData.length; b++) {
+            matrix[0][b] = b;
+        }
+
+        for (let i = 1; i < this.state.sessionsData.length; i++) {
+            for (let j = 1; j < this.state.sessionsData.length; j++) {
+                let distance = this.getLevenshteinDistance(this.state.sessionsData[i]._fields[1], this.state.sessionsData[j]._fields[1]);
+                matrix[i][j] = 0;
+                matrix[i][j - 1] = distance;
+                matrix[i - 1][j] = distance;
+            }
+        }
+
+        console.log("matrix 1: ", matrix[0][1]);
+        console.log("matrix 2: ", matrix[1][0]);
+        console.log("matrix 3: ", matrix[10][10]);
+        console.log("matrix 4: ", matrix[10][9]);
+        console.log("matrix 5: ", matrix[9][10]);
+        console.log("matrix 6: ", matrix);
+
+        if (this.state.sessionsData !== []) {
+            this.setState({
+                loading: false,
+            })
         }
     }
 
@@ -158,8 +268,7 @@ class Length extends React.Component {
                     </div>
                 </Grid>
                 <Grid item xs={6}>
-                    <Table sessions={this.state.sessionsData}/>
-
+                    <ResultsPanel loading={this.state.loading} result={this.state.result}/>
                 </Grid>
             </Grid>
 
