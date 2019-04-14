@@ -39,7 +39,7 @@ class Length extends React.Component {
 
 
     async requestLength() {
-        axios.get('http://localhost:3000/session')
+        axios.get('http://localhost:3000/allsessions')
             .then(res => {
                 console.log("response: ", res);
                 this.setState({sessionsData: res.data.records});
