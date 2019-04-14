@@ -36,8 +36,9 @@ class Element extends React.Component {
         this.setState({path: event.target.value});
     };
 
-//async
     requestElement() {
+        this.props.handleLoading(true);
+
         axios.post('http://localhost:3000/element', {path: this.state.path})
             .then(res => {
                 console.log("response: ", res);
@@ -72,50 +73,42 @@ class Element extends React.Component {
                     }
                 });
             }
-            this.setState({result: filteredSessions});
+            this.props.handleLoading(false);
+            this.props.handleResult(filteredSessions);
         }
     }
 
     render() {
         return (
-            <Grid container spacing={0}>
-                <Grid item xs={6}>
-                    <div>
-                        <FormControl component="fieldset">
-                            <RadioGroup
-                                aria-label="Compare"
-                                name="compare"
-                                value={this.state.compare}
-                                onChange={this.handleChange}
-                            >
-                                <FormControlLabel value="contain" control={<Radio/>} label="Contains"/>
-                                <FormControlLabel value="begin" control={<Radio/>} label="Begins in"/>
-                                <FormControlLabel value="end" control={<Radio/>} label="Ends in"/>
-                            </RadioGroup>
-                        </FormControl>
+            <div>
+                <FormControl component="fieldset">
+                    <RadioGroup
+                        aria-label="Compare"
+                        name="compare"
+                        value={this.state.compare}
+                        onChange={this.handleChange}
+                    >
+                        <FormControlLabel value="contain" control={<Radio/>} label="Contains"/>
+                        <FormControlLabel value="begin" control={<Radio/>} label="Begins in"/>
+                        <FormControlLabel value="end" control={<Radio/>} label="Ends in"/>
+                    </RadioGroup>
+                </FormControl>
 
-                        <TextField
-                            id="standard-dense"
-                            label="Element's XPath"
-                            onChange={this.handleInputChange}
-                            className="input"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            margin="dense"
-                        />
-                        <Button variant="contained" color="primary" onClick={this.requestElement}
-                                disabled={(this.state.path === '' || this.state.compare === '')}>
-                            Find
-                        </Button>
-                    </div>
-                </Grid>
-                <Grid item xs={6}>
-                    <ResultsPanel result={this.state.result}/>
-                </Grid>
-            </Grid>
-
-
+                <TextField
+                    id="standard-dense"
+                    label="Element's XPath"
+                    onChange={this.handleInputChange}
+                    className="input"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    margin="dense"
+                />
+                <Button variant="contained" color="primary" onClick={this.requestElement}
+                        disabled={(this.state.path === '' || this.state.compare === '')}>
+                    Find
+                </Button>
+            </div>
         );
     }
 }

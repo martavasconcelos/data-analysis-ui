@@ -17,11 +17,11 @@ class ResultsPanel extends React.Component {
             })
                 .then(res => {
 
-                    let dataStr ="data:text/json;charset=utf-8,";
+                    let dataStr = "data:text/json;charset=utf-8,";
 
-                    res.data.records.map((node)=>{
-                    let exportObj = res.data.records[0]._fields[0].properties;
-                    dataStr += encodeURIComponent(JSON.stringify(exportObj)) + ", \n";
+                    res.data.records.map((node) => {
+                        let exportObj = res.data.records[0]._fields[0].properties;
+                        dataStr += encodeURIComponent(JSON.stringify(exportObj)) + ", \n";
                     });
 
                     let downloadAnchorNode = document.createElement('a');
@@ -34,11 +34,12 @@ class ResultsPanel extends React.Component {
         });
     }
 
-
     render() {
-        console.log("res", this.props.result);
+
         return (<div className="ResultsPanelStyles">
             <Paper className="PaperStyles">
+                {this.props.loading &&
+                <p className="noMargin">Getting results...</p>}
                 {this.props.result.length > 0 ?
                     <ul className="noMargin">
                         {this.props.result.map((session) => {
@@ -46,14 +47,15 @@ class ResultsPanel extends React.Component {
                         })}
                     </ul>
                     :
-                    this.props.loading ?
-                        <p className="noMargin">Getting results...</p>
-                        :
-                        <p className="noMargin"> No results to show.</p>
+                    !this.props.loading &&
+                    <p className="noMargin"> No results to show.</p>
                 }
             </Paper>
             <Button variant="contained" color="primary" onClick={this.downloadJsonFile}>
                 Download
+            </Button>
+            <Button variant="contained" color="primary" onClick={() => this.props.handleReset()}>
+                Reset
             </Button>
         </div>);
     }

@@ -39,6 +39,9 @@ class Length extends React.Component {
 
 
     async requestLength() {
+
+        this.props.handleLoading(true);
+
         axios.get('http://localhost:3000/allsessions')
             .then(res => {
                 console.log("response: ", res);
@@ -79,16 +82,14 @@ class Length extends React.Component {
                     }
                 });
             }
-            this.setState({result: filteredSessions});
-        }
-        console.log("reslt: ", this.state.result);
+
+            this.props.handleLoading(false);
+            this.props.handleResult(filteredSessions);        }
 
     }
 
     render() {
         return (
-            <Grid container spacing={0}>
-                <Grid item xs={6}>
                     <div>
                         <FormControl component="fieldset">
                             <RadioGroup
@@ -121,11 +122,6 @@ class Length extends React.Component {
                             Find
                         </Button>
                     </div>
-                </Grid>
-                <Grid item xs={6}>
-                    <ResultsPanel result={this.state.result}/>
-                </Grid>
-            </Grid>
 
 
         );

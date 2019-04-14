@@ -40,16 +40,9 @@ class ActionTypes extends React.Component {
 
     async requestActionTypes() {
 
-        this.setState({
-            loading: true,
-        });
-/*
-        axios.get('http://localhost:3000/actiontype')
-            .then(res => {
-                console.log("response: ", res);
-                this.setState({sessionsData: res.data.records});
-                this.filterByThreshold();
-            })*/
+        this.props.handleLoading(true);
+
+        console.log("request");
 
 
         axios.post('http://localhost:3000/actiontype', {
@@ -62,10 +55,10 @@ class ActionTypes extends React.Component {
             })
         //todo catch error
 
-
     }
 
     filterToShow(data) {
+        console.log("filtered:", data)
         let filteredSessions = [];
         data.map((item) => {
             console.log("item: ", item);
@@ -76,19 +69,13 @@ class ActionTypes extends React.Component {
             }
         });
 
-        this.setState({result: filteredSessions});
+        this.props.handleResult(filteredSessions);
+        this.props.handleLoading(false);
 
-        if (this.state.result !== []) {
-            this.setState({
-                loading: false,
-            });
-        }
     }
 
     render() {
         return (
-            <Grid container spacing={0}>
-                <Grid item xs={6}>
                     <div>
                         <FormControl component="fieldset">
                             <RadioGroup
@@ -119,12 +106,6 @@ class ActionTypes extends React.Component {
                             Find
                         </Button>
                     </div>
-                </Grid>
-                <Grid item xs={6}>
-                    <ResultsPanel loading={this.state.loading} result={this.state.result}/>
-                </Grid>
-            </Grid>
-
 
         );
     }
