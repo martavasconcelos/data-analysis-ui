@@ -1,17 +1,10 @@
 import React from 'react';
 import axios from 'axios';
-import Table from './Table';
 
 /* Material UI */
-import TextField from '@material-ui/core/TextField';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
-import Grid from "@material-ui/core/Grid/Grid";
-import AnalysisTabs from "./AnalysisTabs";
-import ResultsPanel from "./ResultsPanel";
+
+import {apiUrl} from "../config";
 
 class Length extends React.Component {
     constructor(props) {
@@ -29,34 +22,27 @@ class Length extends React.Component {
         };
     }
 
-    handleChange = event => {
-        this.setState({algorithm: event.target.value});
-    };
-
-    handleInputChange = event => {
-        this.setState({percentage: parseInt(event.target.value)});
-    };
-
-
     async requestSimilarity() {
         this.props.handleLoading(true);
 
-        axios.get('http://localhost:3000/path')
+        axios.get(apiUrl + 'path')
             .then(res => {
                 console.log("response from path id: ", res);
-                this.setState({sessionsData: res.data.records});
-                this.getSimilarityMatrix();
+                this.getSimilarityMatrix(res.data.records);
             })
-        //todo catch error
+            .catch(error => {
+                console.error('Error during request:', error);
+            });
     }
 
 
-    getSimilarityMatrix() {
+    getSimilarityMatrix(sessionsData) {
         let mat = [];
         let similarityValues = [];
         let similaritySessions = [];
-        let length = this.state.sessionsData.length;
+        let length = sessionsData.length;
 
+        // increment first row
         let i;
         for (i = 0; i < length; i++) {
             mat[i] = [];
@@ -68,31 +54,32 @@ class Length extends React.Component {
             mat[0][b] = [];
         }
 
+        // get levenshtein distance for each pair of sessions
         //todo mudar para nao calcular 2x distance
         for (let i = 0; i < length; i++) {
             for (let j = 0; j < length; j++) {
-                let distance = this.getLevenshteinDistance(this.state.sessionsData[i]._fields[1], this.state.sessionsData[j]._fields[1]);
+                let distance = this.getLevenshteinDistance(sessionsData[i]._fields[1], sessionsData[j]._fields[1]);
                 mat[i][j] = distance;
             }
         }
 
+        // sum levenshtein distance of each session to all sequences
         for (let i = 0; i < length; i++) {
             let value = 0;
             for (let j = 1; j < length; j++) {
                 value += mat[i][j];
             }
-            let x = {session: this.state.sessionsData[i]._fields[0], value: value}
+            let x = {session: sessionsData[i]._fields[0], value: value}
 
             similarityValues.push(x);
         }
+        // sort by the most common (lowest value) to the less common
         similarityValues.sort((a, b) => parseFloat(a.value) - parseFloat(b.value));
 
         similarityValues.map((sessionData) => {
                 similaritySessions.push(sessionData.session)
             }
         );
-
-        console.table("matrix final: ", similarityValues);
 
         this.props.handleLoading(false);
         this.props.handleResult(similaritySessions, true);
@@ -139,10 +126,10 @@ class Length extends React.Component {
             <div>
                 <p className='introText'> Levenshtein algorithm calculates the minimum number of actions
                     (insert, delete, substitution) that required to transform one sequence into another.
-                    Accepting that the most common sequence is the one with the lowest sum of the levenshtein distance to all
+                    Accepting that the most common sequence is the one with the lowest sum of the levenshtein distance
+                    to all
                     sequences, the sequences can be order by the most common to the less common
-                    based on that value.   </p>
-
+                    based on that value. </p>
                 <Button variant="contained" color="primary" onClick={this.requestSimilarity}>
                     Order
                 </Button>

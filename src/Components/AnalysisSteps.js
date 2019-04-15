@@ -15,12 +15,10 @@ import Grid from "@material-ui/core/Grid/Grid";
 import ResultsPanel from "./ResultsPanel";
 import Divider from '@material-ui/core/Divider';
 
-import {buttonTheme} from '../Overrides/ButtonOverride';
 
-
-class AnalysisTabs extends React.Component {
-    constructor(props) {
-        super(props);
+class AnalysisSteps extends React.Component {
+    constructor() {
+        super();
         this.state = {
             activeStep: 0,
             loading: false,
@@ -62,40 +60,37 @@ class AnalysisTabs extends React.Component {
     };
 
     handleResult = (resultsData, common = false) => {
-        console.log("result!", resultsData);
+        // if there is no results yet, set the results as the ones received
         if (this.state.results.length === 0) {
             this.setState({
                 results: resultsData,
             });
         }
+        // if there is already previous results, it is needed to combine them to have a proper response
         else {
-            console.log("combine!");
             this.combineResults(resultsData, common);
         }
     };
 
-    //in order to not change how the results are sorted,
-    // if the new results are coming from similarity, the way to combine them has to be different
-    // since the results to show need to be in new results' order.
+    /* in order to not change how the results are sorted,
+     if the new results are coming from similarity, the way to combine them has to be different
+     since the results to show need to be in new results' order. */
     combineResults(newResults, common) {
         let resultsToShow = [];
-        //sort ->common
+
         if (common) {
             newResults.forEach((newResult) => {
                 this.state.results.forEach((result) => {
                     if (newResult == result) {
-                        console.log("pushed!");
                         resultsToShow.push(newResult);
                     }
                 })
             });
         }
         else {
-
             this.state.results.forEach((result) => {
                 newResults.forEach((newResult => {
                     if (newResult == result) {
-                        console.log("pushed!");
                         resultsToShow.push(newResult);
                     }
                 }))
@@ -113,7 +108,6 @@ class AnalysisTabs extends React.Component {
     };
 
     handleLoading = (loading) => {
-        console.log("laoding!");
         this.setState({
             loading,
         });
@@ -181,4 +175,4 @@ class AnalysisTabs extends React.Component {
     }
 }
 
-export default AnalysisTabs;
+export default AnalysisSteps;

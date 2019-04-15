@@ -13,6 +13,7 @@ import Grid from "@material-ui/core/Grid/Grid";
 
 import {textFieldTheme} from '../Overrides/TextFieldOverride';
 import {buttonFindTheme} from '../Overrides/ButtonOverride';
+import {apiUrl} from "../config";
 
 class ActionTypes extends React.Component {
     constructor(props) {
@@ -24,10 +25,7 @@ class ActionTypes extends React.Component {
 
         this.state = {
             operator: '',
-            sessionsData: [],
             threshold: '',
-            result: [],
-            loading: false
         };
     }
 
@@ -41,37 +39,35 @@ class ActionTypes extends React.Component {
 
 
     async requestActionTypes() {
-
+        // activate loading on the parent component
         this.props.handleLoading(true);
 
         console.log("request");
 
 
-        axios.post('http://localhost:3000/actiontype', {
+        axios.post(apiUrl + 'actiontype', {
             threshold: parseInt(this.state.threshold),
             operator: this.state.operator
         })
             .then(res => {
                 console.log("response: ", res);
-                //  this.setState({sessionsData: res.data.records});
                 this.filterToShow(res.data.records);
             })
-        //todo catch error
-
+            .catch(error => {
+                console.error('Error during request:', error);
+            });
     }
 
     filterToShow(data) {
-        console.log("filtered:", data)
         let filteredSessions = [];
         data.map((item) => {
-            console.log("item: ", item);
             if (item._fields[0] !== null) {
                 item._fields[0].map((session) => {
                     filteredSessions.push(session);
                 });
             }
         });
-
+        // pass results to the parent component and stop loadind
         this.props.handleResult(filteredSessions);
         this.props.handleLoading(false);
 
@@ -81,7 +77,8 @@ class ActionTypes extends React.Component {
         return (
             <div>
                 <Grid container spacing={0}>
-                    <p className='introText'> User interactions are saved as one of four types: click, input, drag and drop or double click.
+                    <p className='introText'> User interactions are saved as one of four types: click, input, drag and
+                        drop or double click.
                         Sequences can be filtered by the number of different action types they have. </p>
                     <Grid item xs={4}>
                         <FormControl component="fieldset">
@@ -115,15 +112,14 @@ class ActionTypes extends React.Component {
                     </Grid>
                     <Grid item xs={4}>
                         <MuiThemeProvider theme={buttonFindTheme}>
-                        <Button variant="contained" color="primary" onClick={this.requestActionTypes}
-                                disabled={(this.state.threshold === '' || this.state.operator === '')}>
-                            Find
-                        </Button>
+                            <Button variant="contained" color="primary" onClick={this.requestActionTypes}
+                                    disabled={(this.state.threshold === '' || this.state.operator === '')}>
+                                Find
+                            </Button>
                         </MuiThemeProvider>
                     </Grid>
                 </Grid>
             </div>
-
         );
     }
 }

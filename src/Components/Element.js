@@ -13,11 +13,12 @@ import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 
 import {textFieldTheme} from "../Overrides/TextFieldOverride";
 import {buttonFindTheme} from "../Overrides/ButtonOverride";
+import {apiUrl} from "../config";
 
 class Element extends React.Component {
-    constructor(props) {
+    constructor() {
 
-        super(props);
+        super();
 
         this.requestElement = this.requestElement.bind(this);
         this.filterByCompareAction = this.filterByCompareAction.bind(this);
@@ -25,8 +26,6 @@ class Element extends React.Component {
         this.state = {
             path: '',
             compare: '',
-            sessionsData: [],
-            result: [],
         };
     }
 
@@ -41,35 +40,36 @@ class Element extends React.Component {
     requestElement() {
         this.props.handleLoading(true);
 
-        axios.post('http://localhost:3000/element', {path: this.state.path})
+        axios.post(apiUrl + 'element', {path: this.state.path})
             .then(res => {
                 console.log("response: ", res);
-                this.setState({sessionsData: res.data.records});
-                this.filterByCompareAction();
+                this.filterByCompareAction(res.data.records);
             })
-        //todo catch error
+            .catch(error => {
+                console.error('Error during request:', error);
+            });
     }
 
-    filterByCompareAction() {
-        if (this.state.sessionsData.length > 0) {
+    filterByCompareAction(sessionsData) {
+        if (sessionsData.length > 0) {
             let filteredSessions = [];
 
             if (this.state.compare === "contain") {
-                this.state.sessionsData.map((session) => {
+                sessionsData.map((session) => {
                     filteredSessions.push(session._fields[0]);
 
                 });
             }
 
             if (this.state.compare === "begin") {
-                this.state.sessionsData.map((session) => {
+                sessionsData.map((session) => {
                     if (session._fields[2] == 1.0) {
                         filteredSessions.push(session._fields[0]);
                     }
                 });
             }
             if (this.state.compare === "end") {
-                this.state.sessionsData.map((session) => {
+                sessionsData.map((session) => {
                     if (session._fields[3]) {
                         filteredSessions.push(session._fields[0]);
                     }
