@@ -137,18 +137,14 @@ class Length extends React.Component {
     render() {
         return (
             <div>
-                <FormControl component="fieldset">
-                    <RadioGroup
-                        aria-label="Algorithm"
-                        name="algorithm"
-                        value={this.state.algorithm}
-                        onChange={this.handleChange}
-                    >
-                        <FormControlLabel value="levenshtein" control={<Radio/>} label="Levenshtein Algorithm"/>
-                    </RadioGroup>
-                </FormControl>
+                <p className='introText'> Levenshtein algorithm calculates the minimum number of actions
+                    (insert, delete, substitution) that required to transform one sequence into another.
+                    Accepting that the most common sequence is the one with the lowest sum of the levenshtein distance to all
+                    sequences, the sequences can be order by the most common to the less common
+                    based on that value.   </p>
+
                 <Button variant="contained" color="primary" onClick={this.requestSimilarity}>
-                    Find
+                    Order
                 </Button>
             </div>
         );

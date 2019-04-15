@@ -11,6 +11,9 @@ import Button from '@material-ui/core/Button';
 import Grid from "@material-ui/core/Grid/Grid";
 import AnalysisTabs from "./AnalysisTabs";
 import ResultsPanel from "./ResultsPanel";
+import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
+import {textFieldTheme} from "../Overrides/TextFieldOverride";
+import {buttonFindTheme} from "../Overrides/ButtonOverride";
 
 class Length extends React.Component {
     constructor(props) {
@@ -84,13 +87,19 @@ class Length extends React.Component {
             }
 
             this.props.handleLoading(false);
-            this.props.handleResult(filteredSessions);        }
+            this.props.handleResult(filteredSessions);
+        }
 
     }
 
     render() {
         return (
-                    <div>
+            <div>
+                <Grid container spacing={0}>
+                    <p className='introText'> User interactions are saved as one of four types: click, input, drag and
+                        drop or double click.
+                        Sequences can be filtered by the number of different action types they have. </p>
+                    <Grid item xs={4}>
                         <FormControl component="fieldset">
                             <RadioGroup
                                 aria-label="Compare"
@@ -104,29 +113,42 @@ class Length extends React.Component {
                                 <FormControlLabel value="shorterThan" control={<Radio/>} label="Shorter than"/>
                             </RadioGroup>
                         </FormControl>
-                        {(this.state.compare === "biggerThan" || this.state.compare === 'shorterThan') &&
-                        <TextField
-                            id="standard-number"
-                            label="Number of interactions"
-                            onChange={this.handleInputChange}
-                            className="input"
-                            type="number"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            margin="normal"
-                        />
-                        }
-                        <Button variant="contained" color="primary" onClick={this.requestLength}
-                                disabled={this.state.compare === ''}>
-                            Find
-                        </Button>
-                    </div>
+                    </Grid>
+                    <Grid item xs={4}>
 
+                        <MuiThemeProvider theme={textFieldTheme}>
+
+                            <TextField
+                                id="standard-number"
+                                label="Number of interactions"
+                                onChange={this.handleInputChange}
+                                className="input"
+                                type="number"
+                                disabled={!(this.state.compare === "biggerThan" || this.state.compare === 'shorterThan')}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                margin="normal"
+                            />
+                        </MuiThemeProvider>
+
+                    </Grid>
+
+                    <Grid item xs={4}>
+                        <MuiThemeProvider theme={buttonFindTheme}>
+                            <Button variant="contained" color="primary" onClick={this.requestLength}
+                                    disabled={this.state.compare === ''}>
+                                Find
+                            </Button>
+                        </MuiThemeProvider>
+                    </Grid>
+                </Grid>
+            </div>
 
         );
     }
 }
+
 
 export default Length;
 

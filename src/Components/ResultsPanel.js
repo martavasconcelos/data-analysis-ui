@@ -1,6 +1,10 @@
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import Button from "@material-ui/core/Button/Button";
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+
+import {buttonTheme} from '../Overrides/ButtonOverride';
+
 import axios from "axios";
 
 class ResultsPanel extends React.Component {
@@ -11,14 +15,12 @@ class ResultsPanel extends React.Component {
 
     downloadJsonFile() {
         this.props.result.forEach(function setFile(session) {
-            console.log("tttt", session);
             axios.post('http://localhost:3000/session', {
                 session: session
             })
                 .then(res => {
 
                     let dataStr = "data:text/json;charset=utf-8,";
-
                     res.data.records.map((node) => {
                         let exportObj = res.data.records[0]._fields[0].properties;
                         dataStr += encodeURIComponent(JSON.stringify(exportObj)) + ", \n";
@@ -39,7 +41,7 @@ class ResultsPanel extends React.Component {
         return (<div className="ResultsPanelStyles">
             <Paper className="PaperStyles">
                 {this.props.loading &&
-                <p className="noMargin">Getting results...</p>}
+                <p className="message">Getting results...</p>}
                 {this.props.result.length > 0 ?
                     <ul className="noMargin">
                         {this.props.result.map((session) => {
@@ -48,15 +50,17 @@ class ResultsPanel extends React.Component {
                     </ul>
                     :
                     !this.props.loading &&
-                    <p className="noMargin"> No results to show.</p>
+                    <p className="message"> No results to show.</p>
                 }
             </Paper>
-            <Button variant="contained" color="primary" onClick={this.downloadJsonFile}>
+            <MuiThemeProvider theme={buttonTheme}>
+            <Button variant="contained" color="primary" onClick={this.downloadJsonFile} >
                 Download
             </Button>
-            <Button variant="contained" color="primary" onClick={() => this.props.handleReset()}>
+            <Button variant="contained" color="primary" onClick={() => this.props.handleReset()} >
                 Reset
             </Button>
+            </MuiThemeProvider>
         </div>);
     }
 }

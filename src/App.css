@@ -1,9 +1,39 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
 .App {
     text-align: center;
 }
-
 .noMargin {
     margin: 0;
+}
+
+/* Analysis Table */
+.roboto{
+    font-family: 'Roboto', sans-serif;
+}
+.appTitle{
+    width: 100%;
+}
+.appSubTitle{
+    width: 100%;
+    margin-top: 0px;
+    color: #222222;
+}
+.appIntroText{
+    font-size: 16px;
+    width: 80%;
+    margin-left: 10%;
+    color: #333333;
+    margin-top: 0px;
+    margin-bottom: 20px;
+}
+.divider{
+    width: 100%;
+}
+
+.message {
+    margin: 0;
+    padding-top: 2vh;
 }
 
 .AnalysisTabsStyles {
@@ -15,11 +45,21 @@
 }
 
 .PaperStyles {
-    max-height: 95vh;
+    height: 70vh;
+    max-height: 70vh;
     overflow: auto;
     background-color: aliceblue;
 }
 
 .input {
     width: 30vw;
+}
+
+.nexStepButtons{
+    margin-top: 5vh;
+}
+.introText{
+    width: 80%;
+    padding-left: 10%;
+    padding-bottom: 2%;
 }
