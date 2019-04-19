@@ -37,6 +37,7 @@ class Length extends React.Component {
 
 
     getSimilarityMatrix(sessionsData) {
+
         let mat = [];
         let similarityValues = [];
         let similaritySessions = [];
@@ -69,12 +70,12 @@ class Length extends React.Component {
             for (let j = 1; j < length; j++) {
                 value += mat[i][j];
             }
-            let x = {session: sessionsData[i]._fields[0], value: value}
+            let x = {session: sessionsData[i]._fields[0], value: value/length}
 
             similarityValues.push(x);
         }
         // sort by the most common (lowest value) to the less common
-        similarityValues.sort((a, b) => parseFloat(a.value) - parseFloat(b.value));
+        similarityValues.sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
 
         similarityValues.map((sessionData) => {
                 similaritySessions.push(sessionData.session)
@@ -82,7 +83,7 @@ class Length extends React.Component {
         );
 
         this.props.handleLoading(false);
-        this.props.handleResult(similaritySessions, true);
+        this.props.handleResult(similaritySessions, 'similarity', 'Order by the most common to the less common ');
     }
 
 
@@ -117,8 +118,8 @@ class Length extends React.Component {
                 }
             }
         }
-
-        return matrix[b.length][a.length];
+        let biggerLength = (a.length > b.length ? a.length : b.length);
+        return 1- (matrix[b.length][a.length]/biggerLength);
     }
 
     render() {

@@ -23,7 +23,9 @@ class Dashboard extends React.Component {
         this.state = {
             activeStep: 0,
             loading: false,
-            results: []
+            results: [],
+            lastStep: '',
+            filterMessage: ''
         };
 
         this.getStepContent = this.getStepContent.bind(this);
@@ -60,26 +62,32 @@ class Dashboard extends React.Component {
         }));
     };
 
-    handleResult = (resultsData, common = false) => {
+    handleResult = (resultsData, step, filter) => {
+this.handleReset();
+        console.log("fitler:", filter);
+        let filterMessage = this.state.filterMessage.concat(" " + filter);
+
+
         // if there is no results yet, set the results as the ones received
         if (this.state.results.length === 0) {
             this.setState({
                 results: resultsData,
+                filterMessage
             });
         }
         // if there is already previous results, it is needed to combine them to have a proper response
         else {
-            this.combineResults(resultsData, common);
+            this.combineResults(resultsData, step, filter);
         }
     };
 
     /* in order to not change how the results are sorted,
      if the new results are coming from similarity, the way to combine them has to be different
      since the results to show need to be in new results' order. */
-    combineResults(newResults, common) {
+    combineResults(newResults, step, filterMessage) {
         let resultsToShow = [];
 
-        if (common) {
+        if (step === 'similarity') {
             newResults.forEach((newResult) => {
                 this.state.results.forEach((result) => {
                     if (newResult == result) {
@@ -99,12 +107,14 @@ class Dashboard extends React.Component {
         }
         this.setState({
             results: resultsToShow,
+            filterMessage
         });
     }
 
     handleReset = () => {
         this.setState({
             results: [],
+            filterMessage: ''
         });
     };
 
@@ -168,8 +178,10 @@ class Dashboard extends React.Component {
                     </div>
                 </Grid>
                 <Grid item xs={6}>
-                    <ResultsPanel loading={this.state.loading} result={this.state.results}
-                                  handleReset={this.handleReset}/>
+                    <ResultsPanel loading={this.state.loading}
+                                  result={this.state.results}
+                                  handleReset={this.handleReset}
+                                  filterMessage={this.state.filterMessage}/>
                 </Grid>
             </Grid>
         );

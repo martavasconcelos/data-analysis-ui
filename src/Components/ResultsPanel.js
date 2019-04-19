@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Paper from '@material-ui/core/Paper';
 import Button from "@material-ui/core/Button/Button";
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
@@ -12,6 +12,9 @@ class ResultsPanel extends React.Component {
     constructor() {
         super();
         this.downloadJsonFile = this.downloadJsonFile.bind(this);
+        this.state={
+            filterMessage: ''
+        }
     }
 
     downloadJsonFile() {
@@ -39,9 +42,9 @@ class ResultsPanel extends React.Component {
     }
 
     render() {
-
         return (<div className="ResultsPanelStyles">
             <Paper className="PaperStyles">
+                <p> {this.props.filterMessage}</p>
                 {this.props.loading &&
                 <p className="message">Getting results...</p>}
                 {this.props.result.length > 0 ?

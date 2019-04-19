@@ -30,7 +30,8 @@ class Element extends React.Component {
     }
 
     handleChange = event => {
-        this.setState({compare: event.target.value});
+        this.setState({
+            compare: event.target.value});
     };
 
     handleInputChange = event => {
@@ -51,8 +52,8 @@ class Element extends React.Component {
     }
 
     filterByCompareAction(sessionsData) {
-        if (sessionsData.length > 0) {
             let filteredSessions = [];
+        if (sessionsData.length > 0) {
 
             if (this.state.compare === "contain") {
                 sessionsData.map((session) => {
@@ -75,9 +76,11 @@ class Element extends React.Component {
                     }
                 });
             }
-            this.props.handleLoading(false);
-            this.props.handleResult(filteredSessions);
         }
+
+            let filter = `${this.state.compare} ${this.state.path} `;
+            this.props.handleLoading(false);
+            this.props.handleResult(filteredSessions, 'element', filter);
     }
 
     render() {

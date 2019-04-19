@@ -31,8 +31,10 @@ class Length extends React.Component {
     }
 
     handleChange = event => {
-        this.setState({compare: event.target.value});
-        console.log("th", this.state.compare);
+        this.setState({
+            compare: event.target.value,
+            length: ''
+        });
     };
 
     handleInputChange = event => {
@@ -40,7 +42,7 @@ class Length extends React.Component {
     };
 
 
-    async requestLength() {
+    requestLength() {
 
         this.props.handleLoading(true);
 
@@ -64,10 +66,10 @@ class Length extends React.Component {
             }
 
             if (this.state.compare === "shortest") {
-                filteredSessions.push(sessionsData[this.state.sessionsData.length - 1]._fields[0]);
+                filteredSessions.push(sessionsData[sessionsData.length - 1]._fields[0]);
             }
 
-            if (this.state.compare === "biggerThan") {
+            if (this.state.compare === "bigger than") {
                 sessionsData.map((session) => {
                     if (session._fields[1].low > this.state.length) {
                         filteredSessions.push(session._fields[0]);
@@ -75,16 +77,17 @@ class Length extends React.Component {
                 });
             }
 
-            if (this.state.compare === "shorterThan") {
+            if (this.state.compare === "shorter than") {
                 sessionsData.map((session) => {
                     if (session._fields[1].low < this.state.length) {
                         filteredSessions.push(session._fields[0]);
                     }
                 });
             }
+            let filter = `${this.state.compare} ${this.state.length} `;
 
             this.props.handleLoading(false);
-            this.props.handleResult(filteredSessions);
+            this.props.handleResult(filteredSessions, 'length', filter);
         }
 
     }
@@ -106,8 +109,8 @@ class Length extends React.Component {
                             >
                                 <FormControlLabel value="biggest" control={<Radio/>} label="Biggest"/>
                                 <FormControlLabel value="shortest" control={<Radio/>} label="Shortest"/>
-                                <FormControlLabel value="biggerThan" control={<Radio/>} label="Bigger than"/>
-                                <FormControlLabel value="shorterThan" control={<Radio/>} label="Shorter than"/>
+                                <FormControlLabel value="bigger than" control={<Radio/>} label="Bigger than"/>
+                                <FormControlLabel value="shorter than" control={<Radio/>} label="Shorter than"/>
                             </RadioGroup>
                         </FormControl>
                     </Grid>
@@ -121,7 +124,7 @@ class Length extends React.Component {
                                 onChange={this.handleInputChange}
                                 className="input"
                                 type="number"
-                                disabled={!(this.state.compare === "biggerThan" || this.state.compare === 'shorterThan')}
+                                disabled={!(this.state.compare === "bigger than" || this.state.compare === 'shorter than')}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}

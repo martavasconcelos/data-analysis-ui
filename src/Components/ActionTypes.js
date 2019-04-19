@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import axios from 'axios';
 
 /* Material UI */
@@ -10,6 +10,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import Grid from "@material-ui/core/Grid/Grid";
+import Checkbox from '@material-ui/core/Checkbox';
 
 import {textFieldTheme} from '../Overrides/TextFieldOverride';
 import {buttonFindTheme} from '../Overrides/ButtonOverride';
@@ -26,8 +27,13 @@ class ActionTypes extends React.Component {
         this.state = {
             operator: '',
             threshold: '',
+            typeOfAction: ''
         };
     }
+
+    handleTypeActionChange = event => {
+        this.setState({typeOfAction: event.target.value});
+    };
 
     handleChange = event => {
         this.setState({operator: event.target.value});
@@ -45,10 +51,7 @@ class ActionTypes extends React.Component {
         console.log("request");
 
 
-        axios.post(apiUrl + 'actiontype', {
-            threshold: parseInt(this.state.threshold),
-            operator: this.state.operator
-        })
+        axios.get(apiUrl + 'actiontype')
             .then(res => {
                 console.log("response: ", res);
                 this.filterToShow(res.data.records);
@@ -60,15 +63,62 @@ class ActionTypes extends React.Component {
 
     filterToShow(data) {
         let filteredSessions = [];
-        data.map((item) => {
-            if (item._fields[0] !== null) {
-                item._fields[0].map((session) => {
-                    filteredSessions.push(session);
-                });
-            }
-        });
-        // pass results to the parent component and stop loadind
-        this.props.handleResult(filteredSessions);
+        if (this.state.operator === '>') {
+            data.forEach((item) => {
+                if (item._fields[1].low > this.state.threshold) {
+                    filteredSessions.push(item._fields[0]);
+                }
+            });
+        }
+        else if (this.state.operator === '<') {
+            data.forEach((item) => {
+                if (item._fields[1].low < this.state.threshold) {
+                    filteredSessions.push(item._fields[0]);
+                }
+            });
+        }
+        else if (this.state.operator === '=') {
+            data.forEach((item) => {
+                if (item._fields[1].low == this.state.threshold) {
+                    filteredSessions.push(item._fields[0]);
+                }
+            });
+        }
+        else if (this.state.operator === 'contains') {
+            data.forEach((item) => {
+                item._fields[2].forEach((action) => {
+                    switch (this.state.typeOfAction) {
+                        case 'click':
+                            if (action === 'click') {
+                                filteredSessions.push(item._fields[0]);
+                            }
+                            break;
+                        case 'doubleClick':
+                            if (action === 'dblclick') {
+                                filteredSessions.push(item._fields[0]);
+                            }
+                            break;
+                        case 'dragAndDrop':
+                            if (action === 'dragAndDrop') {
+                                filteredSessions.push(item._fields[0]);
+                            }
+                            break;
+                        case 'input':
+                            if (action === 'input') {
+                                filteredSessions.push(item._fields[0]);
+                            }
+                            break;
+                        default:
+                            break;
+
+                    }
+                })
+            });
+        }
+        let filter = `Action Types ${this.state.operator} ${this.state.threshold} `;
+
+        // pass results to the parent component and stop loading
+        this.props.handleResult(filteredSessions, 'actionTypes', filter);
         this.props.handleLoading(false);
 
     }
@@ -91,29 +141,46 @@ class ActionTypes extends React.Component {
                                 <FormControlLabel value=">" control={<Radio/>} label="More than"/>
                                 <FormControlLabel value="<" control={<Radio/>} label="Less than"/>
                                 <FormControlLabel value="=" control={<Radio/>} label="Equal to"/>
+                                <FormControlLabel value="contains" control={<Radio/>} label="Contains"/>
                             </RadioGroup>
                         </FormControl>
                     </Grid>
                     <Grid item xs={4}>
+                        {this.state.operator === 'contains' ?
 
-                        <MuiThemeProvider theme={textFieldTheme}>
-                            <TextField
-                                id="standard-number"
-                                label="Number of different action types"
-                                onChange={this.handleInputChange}
-                                className="input"
-                                type="number"
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                margin="normal"
-                            />
-                        </MuiThemeProvider>
+                            <RadioGroup
+                                aria-label="typeOfAction"
+                                name="typeOfAction"
+                                value={this.state.typeOfAction}
+                                onChange={this.handleTypeActionChange}
+                            >
+                                <FormControlLabel value="click" control={<Radio/>} label="click"/>
+                                <FormControlLabel value="doubleClick" control={<Radio/>} label="double click"/>
+                                <FormControlLabel value="dragAndDrop" control={<Radio/>} label="drag and drop"/>
+                                <FormControlLabel value="input" control={<Radio/>} label="input"/>
+                            </RadioGroup>
+
+                            :
+
+                            <MuiThemeProvider theme={textFieldTheme}>
+                                <TextField
+                                    id="standard-number"
+                                    label="Number of different action types"
+                                    onChange={this.handleInputChange}
+                                    className="input"
+                                    type="number"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    margin="normal"
+                                />
+                            </MuiThemeProvider>
+                        }
                     </Grid>
                     <Grid item xs={4}>
                         <MuiThemeProvider theme={buttonFindTheme}>
                             <Button variant="contained" color="primary" onClick={this.requestActionTypes}
-                                    disabled={(this.state.threshold === '' || this.state.operator === '')}>
+                                    disabled={(this.state.operator === '')}>
                                 Find
                             </Button>
                         </MuiThemeProvider>
