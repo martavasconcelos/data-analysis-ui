@@ -56,21 +56,21 @@ class Element extends React.Component {
         if (sessionsData.length > 0) {
 
             if (this.state.compare === "contain") {
-                sessionsData.map((session) => {
+                sessionsData.forEach((session) => {
                     filteredSessions.push(session._fields[0]);
 
                 });
             }
 
             if (this.state.compare === "begin") {
-                sessionsData.map((session) => {
+                sessionsData.forEach((session) => {
                     if (session._fields[2] == 1.0) {
                         filteredSessions.push(session._fields[0]);
                     }
                 });
             }
             if (this.state.compare === "end") {
-                sessionsData.map((session) => {
+                sessionsData.forEach((session) => {
                     if (session._fields[3]) {
                         filteredSessions.push(session._fields[0]);
                     }
@@ -80,7 +80,7 @@ class Element extends React.Component {
 
             let filter = `${this.state.compare} ${this.state.path} `;
             this.props.handleLoading(false);
-            this.props.handleResult(filteredSessions, 'element', filter);
+            this.props.handleResult(filteredSessions, filter);
     }
 
     render() {

@@ -70,7 +70,7 @@ class Length extends React.Component {
             }
 
             if (this.state.compare === "bigger than") {
-                sessionsData.map((session) => {
+                sessionsData.forEach((session) => {
                     if (session._fields[1].low > this.state.length) {
                         filteredSessions.push(session._fields[0]);
                     }
@@ -78,7 +78,7 @@ class Length extends React.Component {
             }
 
             if (this.state.compare === "shorter than") {
-                sessionsData.map((session) => {
+                sessionsData.forEach((session) => {
                     if (session._fields[1].low < this.state.length) {
                         filteredSessions.push(session._fields[0]);
                     }
@@ -87,7 +87,7 @@ class Length extends React.Component {
             let filter = `${this.state.compare} ${this.state.length} `;
 
             this.props.handleLoading(false);
-            this.props.handleResult(filteredSessions, 'length', filter);
+            this.props.handleResult(filteredSessions, filter);
         }
 
     }

@@ -16,6 +16,7 @@ import Length from "../Components/Length";
 import Similarity from "../Components/Similarity"
 import Element from "../Components/Element";
 import ResultsPanel from "../Components/ResultsPanel";
+import Messages from "../Messages";
 
 class Dashboard extends React.Component {
     constructor() {
@@ -62,54 +63,55 @@ class Dashboard extends React.Component {
         }));
     };
 
-    handleResult = (resultsData, step, filter) => {
-this.handleReset();
-        console.log("fitler:", filter);
+    handleResult = (resultsData, filter) => {
+        this.handleReset();
         let filterMessage = this.state.filterMessage.concat(" " + filter);
 
+        this.setState({
+            results: resultsData,
+            filterMessage
+        });
 
-        // if there is no results yet, set the results as the ones received
-        if (this.state.results.length === 0) {
-            this.setState({
-                results: resultsData,
-                filterMessage
-            });
-        }
-        // if there is already previous results, it is needed to combine them to have a proper response
-        else {
-            this.combineResults(resultsData, step, filter);
-        }
     };
 
-    /* in order to not change how the results are sorted,
-     if the new results are coming from similarity, the way to combine them has to be different
-     since the results to show need to be in new results' order. */
-    combineResults(newResults, step, filterMessage) {
-        let resultsToShow = [];
+    combineResults = (resultsToCompare) => {
+        console.log("combine", resultsToCompare);
+        let similarityResults = [];
+        let resultsToCombine = [];
+        let sortedResults = [];
+        let filterMessage = '| ';
+        resultsToCompare.forEach((resultToCompare) => {
+            filterMessage = filterMessage.concat(resultToCompare.filter).concat(' |');
+            if (resultToCompare.filter.trim() === Messages.similarityFilter.trim()) {
+                similarityResults = resultToCompare.result;
+            }
+            else {
+                resultsToCombine.push(resultToCompare.result)
+            }
+        });
 
-        if (step === 'similarity') {
-            newResults.forEach((newResult) => {
-                this.state.results.forEach((result) => {
-                    if (newResult == result) {
-                        resultsToShow.push(newResult);
+        let combinedResults = resultsToCombine.shift().filter(function (v) {
+            return resultsToCombine.every(function (a) {
+                return a.indexOf(v) !== -1;
+            });
+        });
+
+        if (similarityResults.length > 0) {
+            similarityResults.forEach((similarityResult) => {
+                combinedResults.forEach((combinedResult) => {
+                    if (combinedResult == similarityResult) {
+                        sortedResults.push(similarityResult);
                     }
                 })
             });
+            combinedResults = sortedResults;
         }
-        else {
-            this.state.results.forEach((result) => {
-                newResults.forEach((newResult => {
-                    if (newResult == result) {
-                        resultsToShow.push(newResult);
-                    }
-                }))
-            });
-        }
+        console.log("sortedResults", combinedResults);
         this.setState({
-            results: resultsToShow,
+            results: combinedResults,
             filterMessage
         });
-    }
+    };
 
     handleReset = () => {
         this.setState({
@@ -181,7 +183,8 @@ this.handleReset();
                     <ResultsPanel loading={this.state.loading}
                                   result={this.state.results}
                                   handleReset={this.handleReset}
-                                  filterMessage={this.state.filterMessage}/>
+                                  filterMessage={this.state.filterMessage}
+                                  combineResults={this.combineResults}/>
                 </Grid>
             </Grid>
         );

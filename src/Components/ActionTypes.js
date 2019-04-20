@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import axios from 'axios';
 
 /* Material UI */
@@ -10,7 +10,6 @@ import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import Grid from "@material-ui/core/Grid/Grid";
-import Checkbox from '@material-ui/core/Checkbox';
 
 import {textFieldTheme} from '../Overrides/TextFieldOverride';
 import {buttonFindTheme} from '../Overrides/ButtonOverride';
@@ -118,7 +117,7 @@ class ActionTypes extends React.Component {
         let filter = `Action Types ${this.state.operator} ${this.state.threshold} `;
 
         // pass results to the parent component and stop loading
-        this.props.handleResult(filteredSessions, 'actionTypes', filter);
+        this.props.handleResult(filteredSessions, filter);
         this.props.handleLoading(false);
 
     }

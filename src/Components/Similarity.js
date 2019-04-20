@@ -5,6 +5,7 @@ import axios from 'axios';
 import Button from '@material-ui/core/Button';
 
 import {apiUrl} from "../config";
+import Messages from "../Messages";
 
 class Length extends React.Component {
     constructor(props) {
@@ -56,11 +57,18 @@ class Length extends React.Component {
         }
 
         // get levenshtein distance for each pair of sessions
-        //todo mudar para nao calcular 2x distance
         for (let i = 0; i < length; i++) {
-            for (let j = 0; j < length; j++) {
-                let distance = this.getLevenshteinDistance(sessionsData[i]._fields[1], sessionsData[j]._fields[1]);
+            for (let j = i; j < length; j++) {
+                let distance;
+                // no need to calculate distance between two equal sessions
+                if(i===j){
+                    distance=0;
+                }
+                else{
+                    distance = this.getLevenshteinDistance(sessionsData[i]._fields[1], sessionsData[j]._fields[1]);
+                }
                 mat[i][j] = distance;
+                mat[j][i]= distance;
             }
         }
 
@@ -77,13 +85,13 @@ class Length extends React.Component {
         // sort by the most common (lowest value) to the less common
         similarityValues.sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
 
-        similarityValues.map((sessionData) => {
+        similarityValues.forEach((sessionData) => {
                 similaritySessions.push(sessionData.session)
             }
         );
 
         this.props.handleLoading(false);
-        this.props.handleResult(similaritySessions, 'similarity', 'Order by the most common to the less common ');
+        this.props.handleResult(similaritySessions, Messages.similarityFilter);
     }
 
 
