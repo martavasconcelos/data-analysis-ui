@@ -26,7 +26,8 @@ class Dashboard extends React.Component {
             loading: false,
             results: [],
             lastStep: '',
-            filterMessage: ''
+            filterMessage: '',
+            showCombineOptions: true
         };
 
         this.getStepContent = this.getStepContent.bind(this);
@@ -109,14 +110,16 @@ class Dashboard extends React.Component {
         console.log("sortedResults", combinedResults);
         this.setState({
             results: combinedResults,
-            filterMessage
+            filterMessage,
+            showCombineOptions:false
         });
     };
 
     handleReset = () => {
         this.setState({
             results: [],
-            filterMessage: ''
+            filterMessage: '',
+            showCombineOptions: true,
         });
     };
 
@@ -184,7 +187,8 @@ class Dashboard extends React.Component {
                                   result={this.state.results}
                                   handleReset={this.handleReset}
                                   filterMessage={this.state.filterMessage}
-                                  combineResults={this.combineResults}/>
+                                  combineResults={this.combineResults}
+                                  showCombineOptions={this.state.showCombineOptions}/>
                 </Grid>
             </Grid>
         );

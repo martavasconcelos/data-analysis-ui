@@ -2,16 +2,14 @@ import React, {Fragment} from 'react';
 import axios from 'axios';
 
 /* Material UI*/
-import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
 import Button from "@material-ui/core/Button/Button";
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import {apiUrl} from "../config";
 
 import {buttonTheme} from '../Overrides/ButtonOverride';
-import Messages from "../Messages";
+import Grid from "@material-ui/core/Grid/Grid";
 
 
 class ResultsPanel extends React.Component {
@@ -49,7 +47,7 @@ class ResultsPanel extends React.Component {
         });
     }
 
-    handleChange = () => {
+    saveFilter = () => {
         let resultsToCompare = this.state.resultsToCompare;
         resultsToCompare.push({filter: this.props.filterMessage, result: this.props.result})
         this.setState({
@@ -64,37 +62,74 @@ class ResultsPanel extends React.Component {
         });
     };
 
+    deleteFilter = (event) => {
+        console.log("event to delete", event.target.id);
+        let toDelete = this.state.resultsToCompare.find(function (element) {
+            return element.filter == event.target.id;
+        });
+        let resultsToCompare = this.state.resultsToCompare;
+        resultsToCompare.pop(toDelete);
+        this.setState({
+            resultsToCompare
+        })
+    };
+
 
     render() {
-        console.log("to compare", this.props.combineResults);
+        console.log("to compare", this.state.resultsToCompare);
         return (<div className="ResultsPanelStyles">
             <Paper className="PaperStyles">
-                <p> {this.props.filterMessage}</p>
-                {this.props.loading &&
-                <p className="message">Getting results...</p>}
-                {this.props.result.length > 0 ?
-                    <Fragment>
-                        <Button variant="contained" color="primary" onClick={this.handleChange}>
-                            Save to Combine
-                        </Button>
-                        <ul className="noMargin">
-                            {this.props.result.map((session) => {
-                                return <li key={session}>{session}</li>
-                            })}
-                        </ul>
-                    </Fragment>
-                    :
-                    !this.props.loading &&
-                    <p className="message"> No results to show.</p>
-                }
+                <Grid container spacing={0}>
+                    <Grid item xs={6}>
+                        <p> {this.props.filterMessage}</p>
+                        {this.props.loading &&
+                        <p className="message">Getting results...</p>}
+                        {this.props.result.length > 0 ?
+                            <Fragment>
+                                {this.props.showCombineOptions &&
 
-
+                                <Button variant="contained" color="primary" onClick={this.saveFilter}>
+                                    Save Filter
+                                </Button>}
+                                <ul className="noMargin">
+                                    {this.props.result.map((session) => {
+                                        return <li key={session}>{session}</li>
+                                    })}
+                                </ul>
+                            </Fragment>
+                            :
+                            !this.props.loading &&
+                            <p className="message"> No results to show.</p>
+                        }
+                    </Grid>
+                    <Grid item xs={6}>
+                        {
+                            this.props.showCombineOptions &&
+                            <Paper>
+                                <p>Active Filters</p>
+                                {
+                                    <ul className="noMargin">
+                                        {this.state.resultsToCompare.map((result) => {
+                                            return <li key={result.filter} id={result.filter}>{result.filter}
+                                                <Button variant="contained" color="secondary"
+                                                        onClick={this.deleteFilter}>
+                                                    X
+                                                </Button>
+                                            </li>
+                                        })}
+                                    </ul>
+                                }
+                            </Paper>
+                        }
+                    </Grid>
+                </Grid>
             </Paper>
             <MuiThemeProvider theme={buttonTheme}>
                 <Button variant="contained" color="primary" onClick={this.downloadJsonFile}>
                     Download
                 </Button>
-                <Button variant="contained" color="primary" onClick={()=>this.props.combineResults(this.state.resultsToCompare)}>
+                <Button variant="contained" color="primary"
+                        onClick={() => this.props.combineResults(this.state.resultsToCompare)}>
                     Combine Results ({this.state.resultsToCompare.length})
                 </Button>
                 <Button variant="contained" color="primary" onClick={() => this.handleReset()}>
