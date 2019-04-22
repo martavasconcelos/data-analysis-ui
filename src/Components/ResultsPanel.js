@@ -81,10 +81,11 @@ class ResultsPanel extends React.Component {
             <Paper className="PaperStyles">
                 <Grid container spacing={0}>
                     <Grid item xs={6}>
-                        <p> {this.props.filterMessage}</p>
                         {this.props.loading &&
                         <p className="message">Getting results...</p>}
-                        {this.props.result.length > 0 ?
+                        <p> {this.props.filterMessage}</p>
+                        <p> {this.props.result.length} results</p>
+                        {this.props.result.length > 0 &&
                             <Fragment>
                                 {this.props.showCombineOptions &&
 
@@ -97,9 +98,6 @@ class ResultsPanel extends React.Component {
                                     })}
                                 </ul>
                             </Fragment>
-                            :
-                            !this.props.loading &&
-                            <p className="message"> No results to show.</p>
                         }
                     </Grid>
                     <Grid item xs={6}>

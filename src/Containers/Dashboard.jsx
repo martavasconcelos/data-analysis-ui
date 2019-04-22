@@ -17,6 +17,7 @@ import Similarity from "../Components/Similarity"
 import Element from "../Components/Element";
 import ResultsPanel from "../Components/ResultsPanel";
 import Messages from "../Messages";
+import Url from "../Components/Url";
 
 class Dashboard extends React.Component {
     constructor() {
@@ -34,7 +35,7 @@ class Dashboard extends React.Component {
     }
 
     getSteps() {
-        return ['Action Types', 'Element', 'Most common', 'Length'];
+        return ['Action Types', 'Element', 'Most common', 'Length', 'Url'];
     }
 
     getStepContent(step) {
@@ -47,6 +48,8 @@ class Dashboard extends React.Component {
                 return <Similarity handleLoading={this.handleLoading} handleResult={this.handleResult}/>;
             case 3:
                 return <Length handleLoading={this.handleLoading} handleResult={this.handleResult}/>;
+            case 4:
+                return <Url handleLoading={this.handleLoading} handleResult={this.handleResult}/>;
             default:
                 return <div><p>"Ups, an error has occurred!"</p></div>
         }
