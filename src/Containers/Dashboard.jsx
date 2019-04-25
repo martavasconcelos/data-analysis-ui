@@ -114,7 +114,7 @@ class Dashboard extends React.Component {
         this.setState({
             results: combinedResults,
             filterMessage,
-            showCombineOptions:false
+            showCombineOptions:false,
         });
     };
 

@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import Grid from "@material-ui/core/Grid/Grid";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 
-import {textFieldTheme} from "../Overrides/TextFieldOverride";
+import {textFieldTextTheme} from "../Overrides/TextFieldOverride";
 import {buttonFindTheme} from "../Overrides/ButtonOverride";
 import {apiUrl} from "../config";
 
@@ -74,7 +74,7 @@ class Length extends React.Component {
 
                     <Grid item xs={8}>
 
-                        <MuiThemeProvider theme={textFieldTheme}>
+                        <MuiThemeProvider theme={textFieldTextTheme}>
                             <TextField
                                 id="standard-dense"
                                 label="URL"

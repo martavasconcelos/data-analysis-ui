@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import Grid from "@material-ui/core/Grid/Grid";
 
-import {textFieldTheme} from '../Overrides/TextFieldOverride';
+import {textFieldNumberTheme} from '../Overrides/TextFieldOverride';
 import {buttonFindTheme} from '../Overrides/ButtonOverride';
 import {apiUrl} from "../config";
 
@@ -62,6 +62,7 @@ class ActionTypes extends React.Component {
 
     filterToShow(data) {
         let filteredSessions = [];
+        let filter = `Action Types ${this.state.operator} ${this.state.threshold} `;
         if (this.state.operator === '>') {
             data.forEach((item) => {
                 if (item._fields[1].low > this.state.threshold) {
@@ -84,6 +85,9 @@ class ActionTypes extends React.Component {
             });
         }
         else if (this.state.operator === 'contains') {
+            this.setState({
+                threshold:''
+            })
             data.forEach((item) => {
                 item._fields[2].forEach((action) => {
                     switch (this.state.typeOfAction) {
@@ -112,9 +116,8 @@ class ActionTypes extends React.Component {
 
                     }
                 })
-            });
+            });filter = `Action Types ${this.state.operator} ${this.state.typeOfAction} `;
         }
-        let filter = `Action Types ${this.state.operator} ${this.state.threshold} `;
 
         // pass results to the parent component and stop loading
         this.props.handleResult(filteredSessions, filter);
@@ -161,7 +164,7 @@ class ActionTypes extends React.Component {
 
                             :
 
-                            <MuiThemeProvider theme={textFieldTheme}>
+                            <MuiThemeProvider theme={textFieldNumberTheme}>
                                 <TextField
                                     id="standard-number"
                                     label="Number of different action types"

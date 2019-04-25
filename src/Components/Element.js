@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import Grid from "@material-ui/core/Grid/Grid";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 
-import {textFieldTheme} from "../Overrides/TextFieldOverride";
+import {textFieldTextTheme} from "../Overrides/TextFieldOverride";
 import {buttonFindTheme} from "../Overrides/ButtonOverride";
 import {apiUrl} from "../config";
 
@@ -31,7 +31,8 @@ class Element extends React.Component {
 
     handleChange = event => {
         this.setState({
-            compare: event.target.value});
+            compare: event.target.value
+        });
     };
 
     handleInputChange = event => {
@@ -52,7 +53,7 @@ class Element extends React.Component {
     }
 
     filterByCompareAction(sessionsData) {
-            let filteredSessions = [];
+        let filteredSessions = [];
         if (sessionsData.length > 0) {
 
             if (this.state.compare === "contain") {
@@ -78,9 +79,28 @@ class Element extends React.Component {
             }
         }
 
-            let filter = `${this.state.compare} ${this.state.path} `;
-            this.props.handleLoading(false);
-            this.props.handleResult(filteredSessions, filter);
+        let filter = `${this.state.compare} ${this.state.path} `;
+        this.props.handleLoading(false);
+        this.joinEqualSessions(filteredSessions, filter);
+    }
+
+    joinEqualSessions(filteredSessions, filter) {
+        let newArrayOfFilteredSessions = [];
+
+        filteredSessions.forEach((session) => {
+            let add = true;
+            newArrayOfFilteredSessions.forEach((newFilteredSession) => {
+                if(session === newFilteredSession){
+                    add = false;
+                }
+            });
+            if(add){
+            newArrayOfFilteredSessions.push(session);
+            }
+        });
+
+        this.props.handleResult(newArrayOfFilteredSessions, filter);
+
     }
 
     render() {
@@ -106,7 +126,7 @@ class Element extends React.Component {
                     </Grid>
                     <Grid item xs={4}>
 
-                        <MuiThemeProvider theme={textFieldTheme}>
+                        <MuiThemeProvider theme={textFieldTextTheme}>
                             <TextField
                                 id="standard-dense"
                                 label="Element's XPath"
