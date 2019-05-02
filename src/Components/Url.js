@@ -69,8 +69,7 @@ class Length extends React.Component {
             <div>
                 <Grid container spacing={0}>
                     <p className='introText'> The URL where the interaction is made by the user is also saved.
-                        Sequences can be order by the most visited URL to the less one, or filtered by the ones which
-                        contain a specific URL </p>
+                        Sequences can be filtered by a specific URL </p>
 
                     <Grid item xs={8}>
 

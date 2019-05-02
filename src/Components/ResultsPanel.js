@@ -16,7 +16,6 @@ import {apiUrl} from "../config";
 import {buttonTheme} from '../Overrides/ButtonOverride';
 import Grid from "@material-ui/core/Grid/Grid";
 
-
 class ResultsPanel extends React.Component {
     constructor() {
         super();
@@ -51,13 +50,18 @@ class ResultsPanel extends React.Component {
                 session: session
             })
                 .then(res => {
+                    let dataStr = "data:text/json;charset=utf-8,[";
 
-                    let dataStr = "data:text/json;charset=utf-8,";
-
-                    res.data.records.forEach((node) => {
+                    res.data.records.forEach((node, index) => {
                         let exportObj = node._fields[0].properties;
-                        dataStr += encodeURIComponent(JSON.stringify(exportObj)) + ", \n";
+                        if (index === 0) {
+                            dataStr += encodeURIComponent(JSON.stringify(exportObj));
+                        }
+                        else {
+                            dataStr += encodeURIComponent(", \n" + JSON.stringify(exportObj));
+                        }
                     });
+                    dataStr = dataStr + "] \n";
 
                     let downloadAnchorNode = document.createElement('a');
                     downloadAnchorNode.setAttribute("href", dataStr);
@@ -175,7 +179,8 @@ class ResultsPanel extends React.Component {
                 </Grid>
             </Paper>
             <MuiThemeProvider theme={buttonTheme}>
-                <Button variant="contained" color="primary" onClick={this.downloadJsonFile} disabled={this.state.checked.length === 0}>
+                <Button variant="contained" color="primary" onClick={this.downloadJsonFile}
+                        disabled={this.state.checked.length === 0}>
                     Download
                 </Button>
                 <Button variant="contained" color="primary" onClick={() => this.props.handleReset()}>
