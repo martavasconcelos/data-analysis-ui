@@ -9,6 +9,11 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from "@material-ui/core/Grid/Grid";
 import Divider from '@material-ui/core/Divider';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+
+/* Styles */
+import {buttonTheme, buttonNoMarginTheme} from '../Overrides/ButtonOverride';
+import {stepperTheme} from '../Overrides/StepperOverride';
 
 /* Components */
 import ActionTypes from "../Components/ActionTypes";
@@ -18,6 +23,7 @@ import Element from "../Components/Element";
 import ResultsPanel from "../Components/ResultsPanel";
 import Messages from "../Messages";
 import Url from "../Components/Url";
+import Tooltip from "@material-ui/core/Tooltip/Tooltip";
 
 class Dashboard extends React.Component {
     constructor() {
@@ -35,7 +41,15 @@ class Dashboard extends React.Component {
     }
 
     getSteps() {
-        return ['Action Types', 'Element', 'Most common', 'Length', 'Url'];
+        return [
+            {label: 'Action Types', info: "User interactions are saved as one of four types: click, input, drag and drop or double click. Sequences can be filtered by the number of different action types they have or if they contain a chosen type of action."},
+            {label: 'Element', info: "Sequences can be filtered by the ones which contain a provided XPath."},
+            {label: 'Most common', info: "Levenshtein algorithm calculates the minimum number of actions" +
+                    "(insert, delete, substitution) that required to transform one sequence into another. " +
+                    "Accepting that the most common sequence is the one with the lowest sum of the levenshtein distance to all" +
+                    "sequences, the sequences can be order by the most common to the less common based on that value. "},
+            {label: 'Length', info: "Sequences can be filtered by the sequences length, as well as finding the biggest and the shortest sequence on data."},
+            {label: 'Url', info: "The URL where the interaction is made by the user is also saved. Sequences can be filtered by a specific URL. "}];
     }
 
     getStepContent(step) {
@@ -114,7 +128,7 @@ class Dashboard extends React.Component {
         this.setState({
             results: combinedResults,
             filterMessage,
-            showCombineOptions:false,
+            showCombineOptions: false,
         });
     };
 
@@ -138,47 +152,58 @@ class Dashboard extends React.Component {
         const {activeStep} = this.state;
         return (
             <Grid container spacing={0}>
-                <h2 className="appTitle roboto"> Web Analytics </h2>
-                <h4 className="appSubTitle roboto"> Data Analysis</h4>
+                <img className='logo' src={require('../logo.png')}/>
+                <h2 className="appTitle roboto"> Mining Web Usage to Generate Regression GUI Tests Automatically </h2>
                 <p className='appIntroText roboto'> The following five steps allow to filtering
-                    sequences' data, previously saved on a Neo4J Database, by different characteristics: action
-                    types, elements, filter by the sequences length, url or order by the most common.
+                    sequences data, previously saved on a Neo4J Database, by different characteristics: action
+                    types, elements, length, url or order by the most common sequence to the less.
                     Start for selecting each filter you want. If you wanna combine filters,
-                    select the filter and combine them all. After that, you can download a JSON file to use it to build automated test cases. </p>
+                    select the filter and combine them using the right menu. After that, you can download a JSON file
+                    for each chosen session to use it to build automated test cases. </p>
                 <Divider variant="middle" className="divider"/>
 
                 <Grid item xs={6}>
-                    <div className="AnalysisTabsStyles">
+                    <div>
+                        <MuiThemeProvider theme={stepperTheme}>
                         <Stepper activeStep={activeStep} orientation="vertical">
-                            {steps.map((label, index) => (
-                                <Step key={label}>
-                                    <StepLabel>{label}</StepLabel>
+                            {steps.map((item, index) => (
+                                <Step key={item.label}>
+                                    <StepLabel>{item.label}
+                                    <MuiThemeProvider theme={buttonNoMarginTheme}>
+                                        <Tooltip title={
+                                            <h2 className='introText'>{item.info}</h2>}>
+                                            <Button> <img className='info' src={require('../info.png')}/> </Button>
+                                        </Tooltip>
+                                    </MuiThemeProvider>
+                                    </StepLabel>
                                     <StepContent>
                                         <Typography>{this.getStepContent(index)}</Typography>
                                         <div>
                                             <div className="nexStepButtons">
-                                                <Button
-                                                    disabled={activeStep === 0}
-                                                    onClick={this.handleBack}
-                                                >
-                                                    Back
-                                                </Button>
-                                                {activeStep !== steps.length - 1 &&
+                                                <MuiThemeProvider theme={buttonTheme}>
+                                                    <Button
+                                                        disabled={activeStep === 0}
+                                                        onClick={this.handleBack}
+                                                    >
+                                                        Back
+                                                    </Button>
+                                                    {activeStep !== steps.length - 1 &&
 
-                                                <Button
-                                                    variant="contained"
-                                                    color="primary"
-                                                    onClick={this.handleNext}
-                                                >
-                                                    Next
-                                                </Button>
-                                                }
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={this.handleNext}
+                                                    >
+                                                        Next
+                                                    </Button>
+                                                    }
+                                                </MuiThemeProvider>
                                             </div>
                                         </div>
                                     </StepContent>
                                 </Step>
                             ))}
                         </Stepper>
+                        </MuiThemeProvider>
                     </div>
                 </Grid>
                 <Grid item xs={6}>

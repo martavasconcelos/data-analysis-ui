@@ -12,7 +12,7 @@ import Grid from "@material-ui/core/Grid/Grid";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 
 import {textFieldNumberTheme} from "../Overrides/TextFieldOverride";
-import {buttonFindTheme} from "../Overrides/ButtonOverride";
+import {buttonFindTheme, radioTheme} from "../Overrides/ButtonOverride";
 import {apiUrl} from "../config";
 
 
@@ -61,15 +61,15 @@ class Length extends React.Component {
 
             let filteredSessions = [];
 
-            if (this.state.compare === "biggest") {
+            if (this.state.compare === "Biggest") {
                 filteredSessions.push(sessionsData[0]._fields[0]);
             }
 
-            if (this.state.compare === "shortest") {
+            if (this.state.compare === "Shortest") {
                 filteredSessions.push(sessionsData[sessionsData.length - 1]._fields[0]);
             }
 
-            if (this.state.compare === "bigger than") {
+            if (this.state.compare === "Bigger than") {
                 sessionsData.forEach((session) => {
                     if (session._fields[1].low > this.state.length) {
                         filteredSessions.push(session._fields[0]);
@@ -77,7 +77,7 @@ class Length extends React.Component {
                 });
             }
 
-            if (this.state.compare === "shorter than") {
+            if (this.state.compare === "Shorter than") {
                 sessionsData.forEach((session) => {
                     if (session._fields[1].low < this.state.length) {
                         filteredSessions.push(session._fields[0]);
@@ -96,23 +96,24 @@ class Length extends React.Component {
         return (
             <div>
                 <Grid container spacing={0}>
-                    <p className='introText'> User interactions are saved as one of four types: click, input, drag and
-                        drop or double click.
-                        Sequences can be filtered by the number of different action types they have. </p>
                     <Grid item xs={4}>
+                        <MuiThemeProvider theme={radioTheme}>
+
                         <FormControl component="fieldset">
+
                             <RadioGroup
                                 aria-label="Compare"
                                 name="Compare"
                                 value={this.state.compare}
                                 onChange={this.handleChange}
                             >
-                                <FormControlLabel value="biggest" control={<Radio/>} label="Biggest"/>
-                                <FormControlLabel value="shortest" control={<Radio/>} label="Shortest"/>
-                                <FormControlLabel value="bigger than" control={<Radio/>} label="Bigger than"/>
-                                <FormControlLabel value="shorter than" control={<Radio/>} label="Shorter than"/>
+                                <FormControlLabel value="Biggest" control={<Radio/>} label="Biggest"/>
+                                <FormControlLabel value="Shortest" control={<Radio/>} label="Shortest"/>
+                                <FormControlLabel value="Bigger than" control={<Radio/>} label="Bigger than"/>
+                                <FormControlLabel value="Shorter than" control={<Radio/>} label="Shorter than"/>
                             </RadioGroup>
                         </FormControl>
+                        </MuiThemeProvider>
                     </Grid>
                     <Grid item xs={4}>
 
@@ -124,11 +125,13 @@ class Length extends React.Component {
                                 onChange={this.handleInputChange}
                                 className="input"
                                 type="number"
-                                disabled={!(this.state.compare === "bigger than" || this.state.compare === 'shorter than')}
+                                disabled={!(this.state.compare === "Bigger than" || this.state.compare === 'Shorter than')}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
                                 margin="normal"
+                                inputProps={{ min: "0", step: "1" }}
+
                             />
                         </MuiThemeProvider>
 
@@ -136,7 +139,7 @@ class Length extends React.Component {
 
                     <Grid item xs={4}>
                         <MuiThemeProvider theme={buttonFindTheme}>
-                            <Button variant="contained" color="primary" onClick={this.requestLength}
+                            <Button variant="contained" onClick={this.requestLength}
                                     disabled={this.state.compare === ''}>
                                 Find
                             </Button>

@@ -19,6 +19,9 @@ export const textFieldNumberTheme = createMuiTheme({
         MuiFormLabel: {
             root: {
                 marginLeft: 20,
+                '&$focused': {
+                    color: '#265c8a',
+                },
             }
         }
     },

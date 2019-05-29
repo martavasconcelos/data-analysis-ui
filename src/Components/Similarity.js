@@ -6,6 +6,14 @@ import Button from '@material-ui/core/Button';
 
 import {apiUrl} from "../config";
 import Messages from "../Messages";
+import Grid from "@material-ui/core/Grid/Grid";
+import FormControl from "@material-ui/core/FormControl/FormControl";
+import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
+import {buttonFindTheme, radioTheme} from "../Overrides/ButtonOverride";
+import RadioGroup from "@material-ui/core/RadioGroup/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
+import Radio from "@material-ui/core/Radio/Radio";
+import TextField from "@material-ui/core/TextField/TextField";
 
 class Length extends React.Component {
     constructor(props) {
@@ -15,7 +23,7 @@ class Length extends React.Component {
         this.requestSimilarity = this.requestSimilarity.bind(this);
 
         this.state = {
-            algorithm: '',
+            algorithm: 'levenshtein',
             sessionsData: [],
             percentage: -1,
             result: [],
@@ -23,7 +31,7 @@ class Length extends React.Component {
         };
     }
 
-    async requestSimilarity() {
+    requestSimilarity() {
         this.props.handleLoading(true);
 
         axios.get(apiUrl + 'path')
@@ -36,6 +44,9 @@ class Length extends React.Component {
             });
     }
 
+    // to be implemented in case of having more algorithms
+    handleChange = event => {
+    };
 
     getSimilarityMatrix(sessionsData) {
 
@@ -61,14 +72,14 @@ class Length extends React.Component {
             for (let j = i; j < length; j++) {
                 let distance;
                 // no need to calculate distance between two equal sessions
-                if(i===j){
-                    distance=0;
+                if (i === j) {
+                    distance = 0;
                 }
-                else{
+                else {
                     distance = this.getLevenshteinDistance(sessionsData[i]._fields[1], sessionsData[j]._fields[1]);
                 }
                 mat[i][j] = distance;
-                mat[j][i]= distance;
+                mat[j][i] = distance;
             }
         }
 
@@ -78,7 +89,7 @@ class Length extends React.Component {
             for (let j = 1; j < length; j++) {
                 value += mat[i][j];
             }
-            let x = {session: sessionsData[i]._fields[0], value: value/length}
+            let x = {session: sessionsData[i]._fields[0], value: value / length}
 
             similarityValues.push(x);
         }
@@ -127,21 +138,35 @@ class Length extends React.Component {
             }
         }
         let biggerLength = (a.length > b.length ? a.length : b.length);
-        return 1- (matrix[b.length][a.length]/biggerLength);
+        return 1 - (matrix[b.length][a.length] / biggerLength);
     }
 
     render() {
         return (
             <div>
-                <p className='introText'> Levenshtein algorithm calculates the minimum number of actions
-                    (insert, delete, substitution) that required to transform one sequence into another.
-                    Accepting that the most common sequence is the one with the lowest sum of the levenshtein distance
-                    to all
-                    sequences, the sequences can be order by the most common to the less common
-                    based on that value. </p>
-                <Button variant="contained" color="primary" onClick={this.requestSimilarity}>
-                    Order
-                </Button>
+                <Grid container spacing={0}>
+                    <Grid item xs={8}>
+                        <FormControl component="fieldset">
+                            <MuiThemeProvider theme={radioTheme}>
+                                <RadioGroup
+                                    aria-label="Compare"
+                                    name="compare"
+                                    value={this.state.algorithm}
+                                    onChange={this.handleChange}
+                                >
+                                    <FormControlLabel className="extraPadding" value="levenshtein" control={<Radio/>} label="Levenshtein Algorithm"/>
+                                </RadioGroup>
+                            </MuiThemeProvider>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <MuiThemeProvider theme={buttonFindTheme}>
+                        <Button variant="contained" onClick={this.requestSimilarity}>
+                            Order
+                        </Button>
+                        </MuiThemeProvider>
+                    </Grid>
+                </Grid>
             </div>
         );
     }

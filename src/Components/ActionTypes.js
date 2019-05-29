@@ -10,9 +10,10 @@ import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import Grid from "@material-ui/core/Grid/Grid";
+import Tooltip from '@material-ui/core/Tooltip';
 
 import {textFieldNumberTheme} from '../Overrides/TextFieldOverride';
-import {buttonFindTheme} from '../Overrides/ButtonOverride';
+import {buttonFindTheme, radioTheme} from '../Overrides/ButtonOverride';
 import {apiUrl} from "../config";
 
 class ActionTypes extends React.Component {
@@ -86,27 +87,27 @@ class ActionTypes extends React.Component {
         }
         else if (this.state.operator === 'contains') {
             this.setState({
-                threshold:''
+                threshold: ''
             })
             data.forEach((item) => {
                 item._fields[2].forEach((action) => {
                     switch (this.state.typeOfAction) {
-                        case 'click':
+                        case 'Click':
                             if (action === 'click') {
                                 filteredSessions.push(item._fields[0]);
                             }
                             break;
-                        case 'doubleClick':
+                        case 'Double Click':
                             if (action === 'dblclick') {
                                 filteredSessions.push(item._fields[0]);
                             }
                             break;
-                        case 'dragAndDrop':
+                        case 'Drag and Drop':
                             if (action === 'dragAndDrop') {
                                 filteredSessions.push(item._fields[0]);
                             }
                             break;
-                        case 'input':
+                        case 'Input':
                             if (action === 'input') {
                                 filteredSessions.push(item._fields[0]);
                             }
@@ -116,7 +117,8 @@ class ActionTypes extends React.Component {
 
                     }
                 })
-            });filter = `Action Types ${this.state.operator} ${this.state.typeOfAction} `;
+            });
+            filter = `Action Types ${this.state.operator} ${this.state.typeOfAction} `;
         }
 
         // pass results to the parent component and stop loading
@@ -129,39 +131,38 @@ class ActionTypes extends React.Component {
         return (
             <div>
                 <Grid container spacing={0}>
-                    <p className='introText'> User interactions are saved as one of four types: click, input, drag and
-                        drop or double click.
-                        Sequences can be filtered by the number of different action types they have. </p>
                     <Grid item xs={4}>
                         <FormControl component="fieldset">
-                            <RadioGroup
-                                aria-label="Compare"
-                                name="compare"
-                                value={this.state.operator}
-                                onChange={this.handleChange}
-                            >
-                                <FormControlLabel value=">" control={<Radio/>} label="More than"/>
-                                <FormControlLabel value="<" control={<Radio/>} label="Less than"/>
-                                <FormControlLabel value="=" control={<Radio/>} label="Equal to"/>
-                                <FormControlLabel value="contains" control={<Radio/>} label="Contains"/>
-                            </RadioGroup>
+                            <MuiThemeProvider theme={radioTheme}>
+                                <RadioGroup
+                                    aria-label="Compare"
+                                    name="compare"
+                                    value={this.state.operator}
+                                    onChange={this.handleChange}
+                                >
+                                    <FormControlLabel value=">" control={<Radio/>} label="More than"/>
+                                    <FormControlLabel value="<" control={<Radio/>} label="Less than"/>
+                                    <FormControlLabel value="=" control={<Radio/>} label="Equal to"/>
+                                    <FormControlLabel value="contains" control={<Radio/>} label="Contains"/>
+                                </RadioGroup>
+                            </MuiThemeProvider>
                         </FormControl>
                     </Grid>
                     <Grid item xs={4}>
                         {this.state.operator === 'contains' ?
-
-                            <RadioGroup
-                                aria-label="typeOfAction"
-                                name="typeOfAction"
-                                value={this.state.typeOfAction}
-                                onChange={this.handleTypeActionChange}
-                            >
-                                <FormControlLabel value="click" control={<Radio/>} label="click"/>
-                                <FormControlLabel value="doubleClick" control={<Radio/>} label="double click"/>
-                                <FormControlLabel value="dragAndDrop" control={<Radio/>} label="drag and drop"/>
-                                <FormControlLabel value="input" control={<Radio/>} label="input"/>
-                            </RadioGroup>
-
+                            <MuiThemeProvider theme={radioTheme}>
+                                <RadioGroup
+                                    aria-label="typeOfAction"
+                                    name="typeOfAction"
+                                    value={this.state.typeOfAction}
+                                    onChange={this.handleTypeActionChange}
+                                >
+                                    <FormControlLabel value="Click" control={<Radio/>} label="Click"/>
+                                    <FormControlLabel value="Double Click" control={<Radio/>} label="Double Click"/>
+                                    <FormControlLabel value="Drag and Drop" control={<Radio/>} label="Drag and Drop"/>
+                                    <FormControlLabel value="Input" control={<Radio/>} label="Input"/>
+                                </RadioGroup>
+                            </MuiThemeProvider>
                             :
 
                             <MuiThemeProvider theme={textFieldNumberTheme}>
@@ -175,13 +176,14 @@ class ActionTypes extends React.Component {
                                         shrink: true,
                                     }}
                                     margin="normal"
+                                    inputProps={{ min: "0", step: "1" }}
                                 />
                             </MuiThemeProvider>
                         }
                     </Grid>
                     <Grid item xs={4}>
                         <MuiThemeProvider theme={buttonFindTheme}>
-                            <Button variant="contained" color="primary" onClick={this.requestActionTypes}
+                            <Button variant="contained" onClick={this.requestActionTypes}
                                     disabled={(this.state.operator === '')}>
                                 Find
                             </Button>

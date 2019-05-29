@@ -12,7 +12,7 @@ import Grid from "@material-ui/core/Grid/Grid";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 
 import {textFieldTextTheme} from "../Overrides/TextFieldOverride";
-import {buttonFindTheme} from "../Overrides/ButtonOverride";
+import {buttonFindTheme, radioTheme} from "../Overrides/ButtonOverride";
 import {apiUrl} from "../config";
 
 class Element extends React.Component {
@@ -56,21 +56,21 @@ class Element extends React.Component {
         let filteredSessions = [];
         if (sessionsData.length > 0) {
 
-            if (this.state.compare === "contain") {
+            if (this.state.compare === "Contains") {
                 sessionsData.forEach((session) => {
                     filteredSessions.push(session._fields[0]);
 
                 });
             }
 
-            if (this.state.compare === "begin") {
+            if (this.state.compare === "Begins in") {
                 sessionsData.forEach((session) => {
                     if (session._fields[2] == 1.0) {
                         filteredSessions.push(session._fields[0]);
                     }
                 });
             }
-            if (this.state.compare === "end") {
+            if (this.state.compare === "Ends in") {
                 sessionsData.forEach((session) => {
                     if (session._fields[3]) {
                         filteredSessions.push(session._fields[0]);
@@ -107,10 +107,8 @@ class Element extends React.Component {
         return (
             <div>
                 <Grid container spacing={0}>
-                    <p className='introText'> User interactions are saved as one of four types: click, input, drag and
-                        drop or double click.
-                        Sequences can be filtered by the number of different action types they have. </p>
                     <Grid item xs={4}>
+                        <MuiThemeProvider theme={radioTheme}>
                         <FormControl component="fieldset">
                             <RadioGroup
                                 aria-label="Compare"
@@ -118,17 +116,19 @@ class Element extends React.Component {
                                 value={this.state.compare}
                                 onChange={this.handleChange}
                             >
-                                <FormControlLabel value="contain" control={<Radio/>} label="Contains"/>
-                                <FormControlLabel value="begin" control={<Radio/>} label="Begins in"/>
-                                <FormControlLabel value="end" control={<Radio/>} label="Ends in"/>
+                                <FormControlLabel value="Contains" control={<Radio/>} label="Contains"/>
+                                <FormControlLabel value="Begins in" control={<Radio/>} label="Begins in"/>
+                                <FormControlLabel value="Ends in" control={<Radio/>} label="Ends in"/>
                             </RadioGroup>
                         </FormControl>
+                        </MuiThemeProvider>
                     </Grid>
                     <Grid item xs={4}>
 
                         <MuiThemeProvider theme={textFieldTextTheme}>
                             <TextField
                                 id="standard-dense"
+                                multiline = "true"
                                 label="Element's XPath"
                                 onChange={this.handleInputChange}
                                 className="input"
@@ -141,7 +141,7 @@ class Element extends React.Component {
                     </Grid>
                     <Grid item xs={4}>
                         <MuiThemeProvider theme={buttonFindTheme}>
-                            <Button variant="contained" color="primary" onClick={this.requestElement}
+                            <Button variant="contained" onClick={this.requestElement}
                                     disabled={(this.state.path === '' || this.state.compare === '')}>
                                 Find
                             </Button>
