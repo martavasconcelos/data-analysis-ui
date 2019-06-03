@@ -77,7 +77,6 @@ class Length extends React.Component {
         console.log("sessions data: ", sessionsData);
         let sessions = [];
         let testedUrls = [];
-       // let toAnalyze = [];
 
         if (sessionsData.length > 0) {
             let sessionsToAdd = [...sessionsData];
@@ -92,19 +91,52 @@ class Length extends React.Component {
                 else {
                     orderedSessions = this.reOrderArray(testedUrls, sessionsToAdd);
                     let item = orderedSessions[0];
-                    sessions.push(item.session);
-                    testedUrls = testedUrls.concat(item.urlsToTest);
-                    sessionsToAdd = this.removeItemFromSessions(item, sessionsToAdd);
-                  //  toAnalyze.push({session: item.session, tested: testedUrls.length});
+                    if(item.urlsToTest.length > 0){
+                        sessions.push(item.session);
+                        testedUrls = testedUrls.concat(item.urlsToTest);
+                        sessionsToAdd = this.removeItemFromSessions(item, sessionsToAdd);
+                    }
                 }
             }
 
         }
         let filter = `Order by the most diverse test to the less diverse`;
-//console.log("toAnalyze",toAnalyze);
         this.props.handleLoading(false);
         this.props.handleResult(sessions, filter);
 
+    }
+    checkCoverage(testedUrls) {
+        let urlsToCover = ["http://www.ipvc.pt/",
+            "http://www.ipvc.pt/m23-provas",
+            "http://www.ipvc.pt/servicos-web",
+            "http://www.ipvc.pt/instituicao",
+            "http://www.ipvc.pt/licenciaturas",
+            "http://www.ipvc.pt/mestrados",
+            "http://www.ipvc.pt/estudar-no-ipvc",
+            "http://www.ipvc.pt/ctesp",
+            "http://www.ipvc.pt/conselho-geral",
+            "http://www.ipvc.pt/mais-23anos",
+            "http://www.ipvc.pt/candidato",
+            "http://www.ipvc.pt/mestrado-enfermagem-medico-cirurgica",
+            "http://www.ipvc.pt/contacto",
+            "http://www.ipvc.pt/pos-graduacoes",
+            "http://www.ipvc.pt/pesquisa",
+            "http://www.ipvc.pt/recursos-humanos-procedimentos-concursais",
+            "http://www.ipvc.pt/maiores-23-candidaturas-2019-20-2-fase",
+            "http://www.ipvc.pt/calendario-escolar",
+            "http://www.ipvc.pt/eleicao-presidente-admissao-definitiva-candidaturas-2019",
+            "http://www.ipvc.pt/formacao-especializada",
+            "http://www.ipvc.pt/candidaturas-estudante-internacional-2019-20-2-fase",
+            "http://www.ipvc.pt/maiores-23-anos-resultados-seriacao",
+            "http://www.ipvc.pt/viver-no-ipvc",
+            "http://www.ipvc.pt/mestrado-gestao-organizacoes"];
+        let count = 0;
+        testedUrls.forEach((url) => {
+            if (urlsToCover.includes(url)) {
+                count++;
+            }
+        });
+        return count;
     }
 
     reOrderArray(testedUrls, sessionsData) {

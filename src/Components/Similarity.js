@@ -103,8 +103,92 @@ class Length extends React.Component {
 
         this.props.handleLoading(false);
         this.props.handleResult(similaritySessions, Messages.similarityFilter);
+        this.setState({
+            similaritySessions
+        });
+        this.requestUrlBySession();
+
     }
 
+    requestUrlBySession() {
+        this.props.handleLoading(true);
+
+        axios.get(apiUrl + 'urlsession')
+            .then(res => {
+                console.log("response: ", res);
+                this.getTestCases(res.data.records);
+            })
+            .catch(error => {
+                console.error('Error during request:', error);
+            });
+    }
+
+    getTestCases(urlsBySession) {
+        let analyze = [];
+        let testedUrls = [];
+
+        this.state.similaritySessions.forEach((session) => {
+            let matchSession = urlsBySession.findIndex(function (element) {
+                return element._fields[0] === session;
+            });
+            //  if (urlsBySession[matchSession]._fields[2].low >= 5) {
+            let urlsToTest = this.getUrlsToTest(testedUrls, urlsBySession[matchSession]._fields[1])
+            testedUrls = testedUrls.concat(urlsToTest);
+            // if (this.checkCoverage(testedUrls) <= 24){
+            analyze.push({session: session, testedUrls: testedUrls})
+            //   if (this.checkCoverage(testedUrls) == 24) {
+
+            // console.log("analyze: ", analyze);
+            // }
+            //}
+            //}
+        });
+        console.log("analyze: ", analyze);
+    }
+
+    getUrlsToTest(testedUrls, sessionUrls) {
+        let urlsToTest = [];
+        sessionUrls.forEach((url) => {
+            if (!testedUrls.includes(url)) {
+                urlsToTest.push(url);
+            }
+        });
+        return urlsToTest;
+    }
+
+    checkCoverage(testedUrls) {
+        let urlsToCover = ["http://www.ipvc.pt/",
+            "http://www.ipvc.pt/m23-provas",
+            "http://www.ipvc.pt/servicos-web",
+            "http://www.ipvc.pt/instituicao",
+            "http://www.ipvc.pt/licenciaturas",
+            "http://www.ipvc.pt/mestrados",
+            "http://www.ipvc.pt/estudar-no-ipvc",
+            "http://www.ipvc.pt/ctesp",
+            "http://www.ipvc.pt/conselho-geral",
+            "http://www.ipvc.pt/mais-23anos",
+            "http://www.ipvc.pt/candidato",
+            "http://www.ipvc.pt/mestrado-enfermagem-medico-cirurgica",
+            "http://www.ipvc.pt/contacto",
+            "http://www.ipvc.pt/pos-graduacoes",
+            "http://www.ipvc.pt/pesquisa",
+            "http://www.ipvc.pt/recursos-humanos-procedimentos-concursais",
+            "http://www.ipvc.pt/maiores-23-candidaturas-2019-20-2-fase",
+            "http://www.ipvc.pt/calendario-escolar",
+            "http://www.ipvc.pt/eleicao-presidente-admissao-definitiva-candidaturas-2019",
+            "http://www.ipvc.pt/formacao-especializada",
+            "http://www.ipvc.pt/candidaturas-estudante-internacional-2019-20-2-fase",
+            "http://www.ipvc.pt/maiores-23-anos-resultados-seriacao",
+            "http://www.ipvc.pt/viver-no-ipvc",
+            "http://www.ipvc.pt/mestrado-gestao-organizacoes"];
+        let count = 0;
+        testedUrls.forEach((url) => {
+            if (urlsToCover.includes(url)) {
+                count++;
+            }
+        });
+        return count;
+    }
 
     getLevenshteinDistance(a, b) {
         // Compute the edit distance between the two given strings
@@ -154,16 +238,17 @@ class Length extends React.Component {
                                     value={this.state.algorithm}
                                     onChange={this.handleChange}
                                 >
-                                    <FormControlLabel className="extraPadding" value="levenshtein" control={<Radio/>} label="Levenshtein Algorithm"/>
+                                    <FormControlLabel className="extraPadding" value="levenshtein" control={<Radio/>}
+                                                      label="Levenshtein Algorithm"/>
                                 </RadioGroup>
                             </MuiThemeProvider>
                         </FormControl>
                     </Grid>
                     <Grid item xs={4}>
                         <MuiThemeProvider theme={buttonFindTheme}>
-                        <Button variant="contained" onClick={this.requestSimilarity}>
-                            Order
-                        </Button>
+                            <Button variant="contained" onClick={this.requestSimilarity}>
+                                Order
+                            </Button>
                         </MuiThemeProvider>
                     </Grid>
                 </Grid>
