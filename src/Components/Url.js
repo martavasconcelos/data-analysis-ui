@@ -200,13 +200,8 @@ class Length extends React.Component {
                         </MuiThemeProvider>
                     </Grid>
                     <MuiThemeProvider theme={buttonOrderTheme}>
-
                     <Button variant="contained" onClick={this.requestUrlBySession}>
                         Order by most diverse
-                    </Button>
-
-                    <Button variant="contained" onClick={this.requestUrlBySession}>
-                        Order by most common
                     </Button>
                     </MuiThemeProvider>
 

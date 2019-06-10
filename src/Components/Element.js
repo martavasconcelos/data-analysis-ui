@@ -12,7 +12,7 @@ import Grid from "@material-ui/core/Grid/Grid";
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 
 import {textFieldTextTheme} from "../Overrides/TextFieldOverride";
-import {buttonFindTheme, radioTheme} from "../Overrides/ButtonOverride";
+import {buttonFindTheme, buttonOrderTheme, radioTheme} from "../Overrides/ButtonOverride";
 import {apiUrl} from "../config";
 
 class Element extends React.Component {
@@ -22,6 +22,7 @@ class Element extends React.Component {
 
         this.requestElement = this.requestElement.bind(this);
         this.filterByCompareAction = this.filterByCompareAction.bind(this);
+        this.requestPathIdBySession = this.requestPathIdBySession.bind(this);
 
         this.state = {
             path: '',
@@ -50,6 +51,84 @@ class Element extends React.Component {
             .catch(error => {
                 console.error('Error during request:', error);
             });
+    }
+
+    requestPathIdBySession() {
+        this.props.handleLoading(true);
+
+        axios.get(apiUrl + 'pathsession')
+            .then(res => {
+                console.log("response: ", res);
+                this.getTestCases(res.data.records);
+            })
+            .catch(error => {
+                console.error('Error during request:', error);
+            });
+    }
+    getTestCases(sessionsData) {
+        console.log("sessions data: ", sessionsData);
+        let sessions = [];
+        let testedPathIds = [];
+
+        if (sessionsData.length > 0) {
+            let sessionsToAdd = [...sessionsData];
+
+            for (let i = 0; i < sessionsData.length; i++) {
+                let orderedSessions = [];
+                if (i === 0) {
+                    testedPathIds = testedPathIds.concat(sessionsData[i]._fields[1]);
+                    sessions.push(sessionsData[i]._fields[0]);
+                    sessionsToAdd.shift();
+                }
+                else {
+                    orderedSessions = this.reOrderArray(testedPathIds, sessionsToAdd);
+                    let item = orderedSessions[0];
+                    if(item.pathIdsToTest.length > 0){
+                        sessions.push(item.session);
+                        testedPathIds = testedPathIds.concat(item.pathIdsToTest);
+                        sessionsToAdd = this.removeItemFromSessions(item, sessionsToAdd);
+                    }
+                }
+            }
+
+        }
+        let filter = `Order by the most diverse test to the less diverse`;
+        this.props.handleLoading(false);
+        this.props.handleResult(sessions, filter);
+
+    }
+
+    reOrderArray(testedPathIds, sessionsData) {
+        let orderedSessions = [];
+
+        sessionsData.forEach((session) => {
+            let pathIdsToTest = this.getUrlsToTest(session._fields[1], testedPathIds);
+            orderedSessions.push({session: session._fields[0], pathIds: session._fields[1], pathIdsToTest: pathIdsToTest});
+        });
+
+        orderedSessions.sort((a, b) => parseFloat(b.pathIdsToTest.length) - parseFloat(a.pathIdsToTest.length));
+
+        return orderedSessions;
+    }
+
+    getUrlsToTest(sessionPathIds, testedPathIds) {
+        let pathIdsToTest = [];
+        sessionPathIds.forEach((pathId) => {
+            if (!testedPathIds.includes(pathId)) {
+                pathIdsToTest.push(pathId);
+            }
+        });
+        return pathIdsToTest;
+    }
+
+    removeItemFromSessions(item, sessions) {
+        let final = [];
+        sessions.forEach((data) => {
+            if (data._fields[0] !== item.session) {
+                final.push(data);
+            }
+        });
+        return final;
     }
 
     filterByCompareAction(sessionsData) {
@@ -147,6 +226,11 @@ class Element extends React.Component {
                             </Button>
                         </MuiThemeProvider>
                     </Grid>
+                    <MuiThemeProvider theme={buttonOrderTheme}>
+                        <Button variant="contained" onClick={this.requestPathIdBySession}>
+                            Order by most diverse
+                        </Button>
+                    </MuiThemeProvider>
                 </Grid>
             </div>
 
