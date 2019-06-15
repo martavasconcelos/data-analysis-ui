@@ -12,7 +12,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 import {apiUrl} from "../config";
 
-import {largerButtonTheme, checkBoxTheme, deleteButtonTheme} from '../Overrides/ButtonOverride';
+import {largerButtonTheme, checkBoxTheme, deleteButtonTheme, checkBoxMarginTheme} from '../Overrides/ButtonOverride';
 import Grid from "@material-ui/core/Grid/Grid";
 
 class ResultsPanel extends React.Component {
@@ -24,6 +24,7 @@ class ResultsPanel extends React.Component {
             compare: false,
             resultsToCompare: [],
             checked: [],
+            checkAll: false,
         }
     }
 
@@ -105,7 +106,20 @@ class ResultsPanel extends React.Component {
             resultsToCompare
         })
     };
-
+    fulfillAllSessions = () => {
+        if (this.state.checkAll) {
+            this.setState({
+                checked: [],
+                checkAll: false,
+            })
+        }
+        else {
+            this.setState({
+                checked: this.props.result,
+                checkAll: true,
+            })
+        }
+    }
 
     render() {
         return (
@@ -120,13 +134,29 @@ class ResultsPanel extends React.Component {
                                 <p> {this.props.result.length} results</p>
                                 {this.props.result.length > 0 &&
                                 <Fragment>
-                                    {this.props.showCombineOptions &&
-                                    <MuiThemeProvider theme={largerButtonTheme}>
-                                        <Button variant="contained" onClick={this.saveFilter}>
-                                            Save Filter
-                                        </Button>
-                                    </MuiThemeProvider>
-                                    }
+                                    <Grid container spacing={0}>
+                                        <Grid item xs={2}>
+                                            <MuiThemeProvider theme={checkBoxMarginTheme}>
+                                                <Checkbox
+                                                    onClick={this.fulfillAllSessions}
+                                                    checked={this.state.checkAll}
+                                                    tabIndex={-1}
+                                                    disableRipple
+                                                />
+                                            </MuiThemeProvider>
+                                        </Grid>
+                                        <Grid item xs={8}>
+                                            {this.props.showCombineOptions &&
+                                            <MuiThemeProvider theme={largerButtonTheme}>
+                                                <Button variant="contained" onClick={this.saveFilter}>
+                                                    Save Filter
+                                                </Button>
+                                            </MuiThemeProvider>
+                                            }
+                                        </Grid>
+                                        <Grid item xs={2}>
+                                        </Grid>
+                                    </Grid>
                                     <List className="noMargin">
                                         {this.props.result.map(value => (
                                             <ListItem key={value} role={undefined} dense button
@@ -158,11 +188,11 @@ class ResultsPanel extends React.Component {
                                                 return <li key={result.filter}>
                                                     {result.filter}
                                                     <MuiThemeProvider theme={deleteButtonTheme}>
-                                                    <Button variant="contained"
-                                                            onClick={() => this.deleteFilter(index)}
-                                                            id={index}>
-                                                        X
-                                                    </Button>
+                                                        <Button variant="contained"
+                                                                onClick={() => this.deleteFilter(index)}
+                                                                id={index}>
+                                                            X
+                                                        </Button>
                                                     </MuiThemeProvider>
                                                 </li>
                                             })}

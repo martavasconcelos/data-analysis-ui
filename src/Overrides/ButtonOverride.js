@@ -120,3 +120,20 @@ export const checkBoxTheme = createMuiTheme({
         },
     }
 });
+
+export const checkBoxMarginTheme = createMuiTheme({
+    overrides: {
+        MuiCheckbox: {
+            root: {
+                marginLeft: '0px',
+                marginTop: '8px',
+            },
+            colorSecondary: {
+                color: '#265c8a',
+                '&$checked': {
+                    color: '#265c8a',
+                },
+            },
+        },
+    }
+});
