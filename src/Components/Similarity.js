@@ -37,7 +37,13 @@ class Length extends React.Component {
         axios.get(apiUrl + 'path')
             .then(res => {
                 console.log("response from path id: ", res);
-                this.getSimilarityMatrix(res.data.records);
+                let similarityValues = [3,6,1,5,2];
+
+                similarityValues.sort((a, b) => parseFloat(b) - parseFloat(a));
+
+                console.log("this.getSimilarityMatrix([0,1,2,3], [0,1,2,4])", this.getLevenshteinDistance([10,20,30,4], [5,10,20,30]));
+                console.log("similarityValues", similarityValues);
+                //this.getSimilarityMatrix(res.data.records);
             })
             .catch(error => {
                 console.error('Error during request:', error);
@@ -53,7 +59,7 @@ class Length extends React.Component {
         let mat = [];
         let similarityValues = [];
         let similaritySessions = [];
-        let length = sessionsData.length;
+        let length = 6;
 
         // increment first row
         let i;
@@ -76,6 +82,8 @@ class Length extends React.Component {
                     distance = 0;
                 }
                 else {
+                    console.log('sessionsData[i]._fields[1]',sessionsData[i]._fields[1]);
+                    console.log('sessionsData[j]._fields[1]',sessionsData[j]._fields[1]);
                     distance = this.getLevenshteinDistance(sessionsData[i]._fields[1], sessionsData[j]._fields[1]);
                 }
                 mat[i][j] = distance;
@@ -89,6 +97,7 @@ class Length extends React.Component {
             for (let j = 1; j < length; j++) {
                 value += mat[i][j];
             }
+
             let x = {session: sessionsData[i]._fields[0], value: value / length}
 
             similarityValues.push(x);
@@ -219,9 +228,11 @@ class Length extends React.Component {
                         Math.min(matrix[i][j - 1] + 1, // insertion
                             matrix[i - 1][j] + 1)); // deletion
                 }
+                console.log("matrix", i, " - ", j, " : ", matrix);
             }
         }
         let biggerLength = (a.length > b.length ? a.length : b.length);
+        console.log('(matrix[b.length][a.length] / biggerLength)', (matrix[b.length][a.length]));
         return 1 - (matrix[b.length][a.length] / biggerLength);
     }
 

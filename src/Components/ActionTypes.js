@@ -63,7 +63,7 @@ class ActionTypes extends React.Component {
 
     filterToShow(data) {
         let filteredSessions = [];
-        let filter = `Action Types ${this.state.operator} ${this.state.threshold} `;
+        let filter = `Action Type ${this.state.operator} ${this.state.threshold} `;
         if (this.state.operator === '>') {
             data.forEach((item) => {
                 if (item._fields[1].low > this.state.threshold) {
@@ -118,7 +118,7 @@ class ActionTypes extends React.Component {
                     }
                 })
             });
-            filter = `Action Types ${this.state.operator} ${this.state.typeOfAction} `;
+            filter = `Action Type ${this.state.operator} ${this.state.typeOfAction} `;
         }
 
         // pass results to the parent component and stop loading

@@ -153,7 +153,7 @@ class Dashboard extends React.Component {
         return (
             <Grid container spacing={0}>
                 <img className='logo' src={require('../logo.png')}/>
-                <h2 className="appTitle roboto"> Mining Web Usage to Generate Regression GUI Tests Automatically </h2>
+                <h2 className="appTitle roboto"> MARTT - Mining Automated Regression Testing Tool </h2>
                 <p className='appIntroText roboto'> The following five steps allow to filtering
                     sequences data, previously saved on a Neo4J Database, by different characteristics: action
                     types, elements, length, url or order by the most common sequence to the less.
